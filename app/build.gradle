@@ -1,0 +1,37 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    compileSdkVersion 33
+
+    defaultConfig {
+        applicationId "com.parrot.camera"
+        // Set the minimum SDK version supported by GroundSdk
+        minSdkVersion 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    // GroundSdk dependencies
+    implementation 'com.parrot.drone.groundsdk:groundsdk:7.7.+'
+    runtimeOnly 'com.parrot.drone.groundsdk:arsdkengine:7.7.+'
+    //new layout
+    //implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+}
