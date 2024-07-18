@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Camera</string>
+    <string name="app_name">BulletDrone</string>
     <string name="drone">Drone</string>
     <string name="remote">Remote</string>
     <string name="active">Active</string>

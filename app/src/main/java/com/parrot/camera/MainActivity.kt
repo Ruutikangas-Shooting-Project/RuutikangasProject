@@ -218,15 +218,17 @@ class MainActivity : AppCompatActivity() {
     /** Delegate to manage start and stop photo capture and video recording button. */
     private val startStop by lazy { StartStop(findViewById(R.id.startStopBtn)) }
     /** Delegate to display and change custom white balance temperature. */
-    private val whiteBalanceTemperature by lazy { WhiteBalanceTemperature(findViewById(R.id.whiteBalanceSpinner)) }
+    //private val whiteBalanceTemperature by lazy { WhiteBalanceTemperature(findViewById(R.id.whiteBalanceSpinner)) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        //setContentView(R.layout.activity_main)
+        //use new land layout
+        setContentView(R.layout.activity_main_land)
 
         // Initialize user interface default values.
-        droneStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
-        rcStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
+        //droneStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
+        //rcStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
 
         streamView.paddingFill = PADDING_FILL_BLUR_CROP
 
@@ -344,7 +346,7 @@ class MainActivity : AppCompatActivity() {
             activeState.startMonitoring(drone)
             cameraMode.startMonitoring(drone)
             startStop.startMonitoring(drone)
-            whiteBalanceTemperature.startMonitoring(drone)
+            //whiteBalanceTemperature.startMonitoring(drone)
         }
     }
 
@@ -397,7 +399,7 @@ class MainActivity : AppCompatActivity() {
         activeState.stopMonitoring()
         cameraMode.stopMonitoring()
         startStop.stopMonitoring()
-        whiteBalanceTemperature.stopMonitoring()
+        //whiteBalanceTemperature.stopMonitoring()
     }
 
     /**
