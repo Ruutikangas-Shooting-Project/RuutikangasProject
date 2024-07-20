@@ -16,4 +16,10 @@
     <string name="take_off">Take off</string>
     <string name="land">land</string>
     <string name="video" />
+    <string name="percentage">%1$d %%</string>
+
+    <string name="status_format">%1$s - %2$s</string>
+
+    <string name="device_state">%1$s - Battery: %2$d%%</string>
+    <string name="device_disconnected">DISCONNECTED - Battery: %1$d%%</string>
 </resources>

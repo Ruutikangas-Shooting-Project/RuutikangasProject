@@ -23,9 +23,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@android:color/transparent"
-
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:padding="8dp">
 
         <LinearLayout
@@ -43,11 +41,11 @@
                 android:layout_marginEnd="8dp"/>
 
             <TextView
-                android:id="@+id/droneStateTxt"
+                android:id="@+id/droneStatusTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
-                tools:text="DISCONNECTED"/>
+                tools:text="DISCONNECTED - "/>
         </LinearLayout>
 
         <LinearLayout
@@ -65,11 +63,11 @@
                 android:layout_marginEnd="8dp"/>
 
             <TextView
-                android:id="@+id/rcStateTxt"
+                android:id="@+id/rcStatusTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
-                tools:text="DISCONNECTED"/>
+                tools:text="DISCONNECTED - "/>
         </LinearLayout>
 
         <LinearLayout
@@ -124,7 +122,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/photo"
-                android:textColor="@android:color/white"/>
+                android:textColor="@android:color/white" />
 
             <RadioButton
                 android:id="@+id/recordingMode"
@@ -144,6 +142,7 @@
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
 

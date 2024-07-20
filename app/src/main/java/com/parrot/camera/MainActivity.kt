@@ -43,139 +43,14 @@ import com.parrot.drone.groundsdk.device.Drone
 import com.parrot.drone.groundsdk.device.RemoteControl
 import com.parrot.drone.groundsdk.device.peripheral.StreamServer
 import com.parrot.drone.groundsdk.device.peripheral.stream.CameraLive
+import com.parrot.drone.groundsdk.device.pilotingitf.Activable
+import com.parrot.drone.groundsdk.device.pilotingitf.ManualCopterPilotingItf
+import com.parrot.drone.groundsdk.device.instrument.BatteryInfo
 import com.parrot.drone.groundsdk.facility.AutoConnection
 import com.parrot.drone.groundsdk.stream.GsdkStreamView
 import com.parrot.drone.groundsdk.stream.GsdkStreamView.PADDING_FILL_BLUR_CROP
-import com.parrot.drone.groundsdk.device.pilotingitf.ManualCopterPilotingItf
-import com.parrot.drone.groundsdk.device.pilotingitf.Activable
 
-/**
- * GroundSdk sample code for camera API usage.
- *
- * This sample app show how to use `MainCamera` and `camera2.MainCamera` peripherals to display and
- * change some camera configuration parameters and to trigger photo capture or video recording.
- *
- * `MainCamera` is the peripheral to control the main camera of drones supporting Camera1 API.
- * `camera2.MainCamera` is the peripheral to control the main camera of drones supporting Camera2 API.
- *
- * This activity manages the connection to the drone, the streaming view and uses delegates to
- * control the camera user interface.
- *
- * The sample code showing how to use the camera API is available is the following delegates:
- * - ActiveState: sample code to display the active state of a camera
- * - CameraMode: sample code to display and change the camera mode (photo capture or video recording)
- * - StartStop: sample code to manage a button to start/stop photo capture and video recording
- * - WhiteBalanceTemperature: sample code to display and change custom white balance temperature
- */
 class MainActivity : AppCompatActivity() {
-
-    /*/** GroundSdk instance. */
-    private lateinit var groundSdk: GroundSdk
-
-    // Drone:
-    /** Current drone instance. */
-    private var drone: Drone? = null
-    /** Reference to the current drone state. */
-    private var droneStateRef: Ref<DeviceState>? = null
-    /** Reference to the current drone stream server Peripheral. */
-    private var streamServerRef: Ref<StreamServer>? = null
-    /** Reference to the current drone live stream. */
-    private var liveStreamRef: Ref<CameraLive>? = null
-    /** Current drone live stream. */
-    private var liveStream: CameraLive? = null
-
-    // Remote control:
-    /** Current remote control instance. */
-    private var rc: RemoteControl? = null
-    /** Reference to the current remote control state. */
-    private var rcStateRef: Ref<DeviceState>? = null
-
-    // User interface:
-    /** Video stream view. */
-    private val streamView by lazy { findViewById<GsdkStreamView>(R.id.stream_view) }
-    /** Drone state text view. */
-    private val droneStateTxt by lazy { findViewById<TextView>(R.id.droneStateTxt) }
-    /** Remote state text view. */
-    private val rcStateTxt by lazy { findViewById<TextView>(R.id.rcStateTxt) }
-
-    // Delegates to manage camera user interface:
-    /** Delegate to display camera active state. */
-    private val activeState by lazy { ActiveState(findViewById(R.id.activeTxt)) }
-    /** Delegate to display and change camera mode. */
-    private val cameraMode by lazy { CameraMode(findViewById(R.id.photoMode), findViewById(R.id.recordingMode)) }
-    /** Delegate to manage start and stop photo capture and video recording button. */
-    private val startStop by lazy { StartStop(findViewById(R.id.startStopBtn)) }
-    /** Delegate to display and change custom white balance temperature. */
-    private val whiteBalanceTemperature by lazy { WhiteBalanceTemperature(findViewById(R.id.whiteBalanceSpinner)) }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        // Initialize user interface default values.
-        droneStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
-        rcStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
-
-        streamView.paddingFill = PADDING_FILL_BLUR_CROP
-
-        // Get a GroundSdk session.
-        groundSdk = ManagedGroundSdk.obtainSession(this)
-        // All references taken are linked to the activity lifecycle and
-        // automatically closed at its destruction.
-    }*/
-
-
-
-    /*override fun onStart() {
-        super.onStart()
-
-        // Monitor the auto connection facility.
-        groundSdk.getFacility(AutoConnection::class.java) {
-            // Called when the auto connection facility is available and when it changes.
-
-            it?.let{
-                // Start auto connection.
-                if (it.status != AutoConnection.Status.STARTED) {
-                    it.start()
-                }
-
-                // If the drone has changed.
-                if (drone?.uid != it.drone?.uid) {
-                    if(drone != null) {
-                        // Stop monitoring the previous drone.
-                        stopDroneMonitors()
-
-                        // Reset user interface drone part.
-                        resetDroneUi()
-                    }
-
-                    // Monitor the new drone.
-                    drone = it.drone
-                    if(drone != null) {
-                        startDroneMonitors()
-                    }
-                }
-
-                // If the remote control has changed.
-                if (rc?.uid  != it.remoteControl?.uid) {
-                    if(rc != null) {
-                        // Stop monitoring the previous remote.
-                        stopRcMonitors()
-
-                        // Reset user interface Remote part.
-                        resetRcUi()
-                    }
-
-                    // Monitor the new remote.
-                    rc = it.remoteControl
-                    if(rc != null) {
-                        startRcMonitors()
-                    }
-                }
-            }
-        }
-    }*/
-
 
     /** GroundSdk instance. */
     private lateinit var groundSdk: GroundSdk
@@ -193,20 +68,24 @@ class MainActivity : AppCompatActivity() {
     private var liveStream: CameraLive? = null
     /** Reference to a current drone piloting interface. */
     private var pilotingItfRef: Ref<ManualCopterPilotingItf>? = null
+    /** Reference to the current drone battery info instrument. */
+    private var droneBatteryInfoRef: Ref<BatteryInfo>? = null
 
     // Remote control:
     /** Current remote control instance. */
     private var rc: RemoteControl? = null
     /** Reference to the current remote control state. */
     private var rcStateRef: Ref<DeviceState>? = null
+    /** Reference to the current remote control battery info instrument. */
+    private var rcBatteryInfoRef: Ref<BatteryInfo>? = null
 
     // User interface:
     /** Video stream view. */
     private val streamView by lazy { findViewById<GsdkStreamView>(R.id.stream_view) }
-    /** Drone state text view. */
-    private val droneStateTxt by lazy { findViewById<TextView>(R.id.droneStateTxt) }
-    /** Remote state text view. */
-    private val rcStateTxt by lazy { findViewById<TextView>(R.id.rcStateTxt) }
+    /** Drone state and battery text view. */
+    private val droneStatusTxt by lazy { findViewById<TextView>(R.id.droneStatusTxt) }
+    /** Remote state and battery text view. */
+    private val rcStatusTxt by lazy { findViewById<TextView>(R.id.rcStatusTxt) }
     /** Take off / land button. */
     private val takeOffLandBt by lazy { findViewById<Button>(R.id.takeOffLandBt) }
 
@@ -217,16 +96,14 @@ class MainActivity : AppCompatActivity() {
     private val cameraMode by lazy { CameraMode(findViewById(R.id.photoMode), findViewById(R.id.recordingMode)) }
     /** Delegate to manage start and stop photo capture and video recording button. */
     private val startStop by lazy { StartStop(findViewById(R.id.startStopBtn)) }
-    /** Delegate to display and change custom white balance temperature. */
-    //private val whiteBalanceTemperature by lazy { WhiteBalanceTemperature(findViewById(R.id.whiteBalanceSpinner)) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         // Initialize user interface default values.
-        //droneStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
-        //rcStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
+        droneStatusTxt.text = getString(R.string.status_format, DeviceState.ConnectionState.DISCONNECTED.toString(), "")
+        rcStatusTxt.text = getString(R.string.status_format, DeviceState.ConnectionState.DISCONNECTED.toString(), "")
 
         streamView.paddingFill = PADDING_FILL_BLUR_CROP
 
@@ -291,17 +168,9 @@ class MainActivity : AppCompatActivity() {
     /**
      * Resets drone user interface part.
      */
-    /*private fun resetDroneUi() {
-        // Reset drone user interface views.
-        droneStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
-
-        // Stop rendering the stream.
-        streamView.setStream(null)
-    }*/
-
     private fun resetDroneUi() {
         // Reset drone user interface views.
-        droneStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
+        droneStatusTxt.text = getString(R.string.status_format, DeviceState.ConnectionState.DISCONNECTED.toString(), "")
         takeOffLandBt.isEnabled = false
         // Stop rendering the stream.
         streamView.setStream(null)
@@ -310,28 +179,12 @@ class MainActivity : AppCompatActivity() {
     /**
      * Starts drone monitors.
      */
-    /*private fun startDroneMonitors() {
-        // Monitor drone state.
-        monitorDroneState()
-
-        // Start video stream.
-        startVideoStream()
-
-        // Start monitoring by camera user interface delegates.
-        drone?.let { drone ->
-            activeState.startMonitoring(drone)
-
-            cameraMode.startMonitoring(drone)
-
-            startStop.startMonitoring(drone)
-
-            whiteBalanceTemperature.startMonitoring(drone)
-        }
-    }*/
-
     private fun startDroneMonitors() {
         // Monitor drone state.
         monitorDroneState()
+
+        // Monitor drone battery charge level.
+        monitorDroneBatteryChargeLevel()
 
         // Start video stream.
         startVideoStream()
@@ -344,43 +197,20 @@ class MainActivity : AppCompatActivity() {
             activeState.startMonitoring(drone)
             cameraMode.startMonitoring(drone)
             startStop.startMonitoring(drone)
-            //whiteBalanceTemperature.startMonitoring(drone)
         }
     }
 
     /**
      * Stops drone monitors.
      */
-    /*private fun stopDroneMonitors() {
-        // Close all references linked to the current drone to stop their monitoring.
-
-        droneStateRef?.close()
-        droneStateRef = null
-
-        liveStreamRef?.close()
-        liveStreamRef = null
-
-        streamServerRef?.close()
-        streamServerRef = null
-
-        liveStream = null
-
-        // Stop monitoring by camera user interface delegates.
-
-        activeState.stopMonitoring()
-
-        cameraMode.stopMonitoring()
-
-        startStop.stopMonitoring()
-
-        whiteBalanceTemperature.stopMonitoring()
-    }*/
-
     private fun stopDroneMonitors() {
         // Close all references linked to the current drone to stop their monitoring.
 
         droneStateRef?.close()
         droneStateRef = null
+
+        droneBatteryInfoRef?.close()
+        droneBatteryInfoRef = null
 
         liveStreamRef?.close()
         liveStreamRef = null
@@ -397,34 +227,50 @@ class MainActivity : AppCompatActivity() {
         activeState.stopMonitoring()
         cameraMode.stopMonitoring()
         startStop.stopMonitoring()
-        //whiteBalanceTemperature.stopMonitoring()
     }
 
     /**
      * Monitor current drone state.
      */
-    /*private fun monitorDroneState() {
-        // Monitor current drone state.
-        droneStateRef = drone?.getState {
-            // Called at each drone state update.
-
-            it?.let {
-                // Update drone connection state view.
-                droneStateTxt.text = it.connectionState.toString()
-            }
-        }
-    }*/
-
     private fun monitorDroneState() {
         // Monitor current drone state.
         droneStateRef = drone?.getState {
             // Called at each drone state update.
 
             it?.let {
-                // Update drone connection state view.
-                droneStateTxt.text = it.connectionState.toString()
+                // Update drone connection state and battery charge level view.
+                droneStatusTxt.text = getString(R.string.status_format, it.connectionState.toString(), getDroneBatteryCharge())
             }
         }
+    }
+
+    /**
+     * Monitors current drone battery charge level.
+     */
+    private fun monitorDroneBatteryChargeLevel() {
+        // Monitor the battery info instrument.
+        droneBatteryInfoRef = drone?.getInstrument(BatteryInfo::class.java) {
+            // Called when the battery info instrument is available and when it changes.
+
+            it?.let {
+                // Update drone battery charge level view.
+                droneStatusTxt.text = getString(R.string.status_format, getDroneConnectionState(), getString(R.string.percentage, it.charge))
+            }
+        }
+    }
+
+    /**
+     * Helper function to get the current drone connection state.
+     */
+    private fun getDroneConnectionState(): String {
+        return droneStateRef?.get()?.connectionState.toString()
+    }
+
+    /**
+     * Helper function to get the current drone battery charge level.
+     */
+    private fun getDroneBatteryCharge(): String {
+        return droneBatteryInfoRef?.get()?.charge?.let { getString(R.string.percentage, it) } ?: ""
     }
 
     /**
@@ -432,15 +278,18 @@ class MainActivity : AppCompatActivity() {
      */
     private fun resetRcUi() {
         // Reset remote control user interface views.
-        rcStateTxt.text = DeviceState.ConnectionState.DISCONNECTED.toString()
+        rcStatusTxt.text = getString(R.string.status_format, DeviceState.ConnectionState.DISCONNECTED.toString(), "")
     }
 
     /**
      * Starts remote control monitors.
      */
     private fun startRcMonitors() {
-        // Monitor remote state
+        // Monitor remote state.
         monitorRcState()
+
+        // Monitor remote battery charge level.
+        monitorRcBatteryChargeLevel()
     }
 
     /**
@@ -451,21 +300,53 @@ class MainActivity : AppCompatActivity() {
 
         rcStateRef?.close()
         rcStateRef = null
+
+        rcBatteryInfoRef?.close()
+        rcBatteryInfoRef = null
     }
 
     /**
      * Monitor current remote control state.
      */
     private fun monitorRcState() {
-        // Monitor current drone state.
+        // Monitor current remote control state.
         rcStateRef = rc?.getState {
             // Called at each remote state update.
 
             it?.let {
-                // Update remote connection state view.
-                rcStateTxt.text = it.connectionState.toString()
+                // Update remote connection state and battery charge level view.
+                rcStatusTxt.text = getString(R.string.status_format, it.connectionState.toString(), getRcBatteryCharge())
             }
         }
+    }
+
+    /**
+     * Monitors current remote control battery charge level.
+     */
+    private fun monitorRcBatteryChargeLevel() {
+        // Monitor the battery info instrument.
+        rcBatteryInfoRef = rc?.getInstrument(BatteryInfo::class.java) {
+            // Called when the battery info instrument is available and when it changes.
+
+            it?.let {
+                // Update remote battery charge level view.
+                rcStatusTxt.text = getString(R.string.status_format, getRcConnectionState(), getString(R.string.percentage, it.charge))
+            }
+        }
+    }
+
+    /**
+     * Helper function to get the current remote connection state.
+     */
+    private fun getRcConnectionState(): String {
+        return rcStateRef?.get()?.connectionState.toString()
+    }
+
+    /**
+     * Helper function to get the current remote battery charge level.
+     */
+    private fun getRcBatteryCharge(): String {
+        return rcBatteryInfoRef?.get()?.charge?.let { getString(R.string.percentage, it) } ?: ""
     }
 
     /**
@@ -485,7 +366,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     /**
      * Manage piloting interface state.
@@ -528,15 +408,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Called on take off/land button click.
+     */
     private fun onTakeOffLandClick() {
         // Get the piloting interface from its reference.
         pilotingItfRef?.get()?.let { itf ->
-            // Do the action according to the interface capabilities
+            // Do the action according to the interface capabilities.
             if (itf.canTakeOff()) {
-                // Take off
+                // Take off.
                 itf.takeOff()
             } else if (itf.canLand()) {
-                // Land
+                // Land.
                 itf.land()
             }
         }
@@ -551,8 +434,8 @@ class MainActivity : AppCompatActivity() {
             // Called when the stream server is available and when it changes.
 
             streamServer?.run {
-                // Enable Streaming
-                if(!streamingEnabled()) {
+                // Enable Streaming.
+                if (!streamingEnabled()) {
                     enableStreaming(true)
                 }
 
@@ -565,8 +448,7 @@ class MainActivity : AppCompatActivity() {
                             if (liveStream == null) {
                                 // It is a new live stream.
 
-                                // Set the live stream as the stream
-                                // to be render by the stream view.
+                                // Set the live stream as the stream to be rendered by the stream view.
                                 streamView.setStream(stream)
                             }
 
@@ -575,7 +457,7 @@ class MainActivity : AppCompatActivity() {
                                 stream.play()
                             }
                         } else {
-                            // Stop rendering the stream
+                            // Stop rendering the stream.
                             streamView.setStream(null)
                         }
                         // Keep the live stream to know if it is a new one or not.
@@ -583,10 +465,10 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             } ?: run {
-                // Stop monitoring the live stream
+                // Stop monitoring the live stream.
                 liveStreamRef?.close()
                 liveStreamRef = null
-                // Stop rendering the stream
+                // Stop rendering the stream.
                 streamView.setStream(null)
             }
         }
