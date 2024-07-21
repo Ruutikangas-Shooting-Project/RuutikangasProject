@@ -32,6 +32,7 @@
 
 package com.parrot.camera
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
@@ -233,11 +234,18 @@ class MainActivity : AppCompatActivity() {
         streamView.paddingFill = PADDING_FILL_BLUR_CROP
 
         takeOffLandBt.setOnClickListener { onTakeOffLandClick() }
-
+        //battery view, to link to other view
+        val batteryStatusButton:Button = findViewById(R.id.batteryStatusButton)
+        batteryStatusButton.setOnClickListener {
+            val intent = Intent(this@MainActivity, BatteryStatusActivity::class.java)
+            startActivity(intent)
+        }
         // Get a GroundSdk session.
         groundSdk = ManagedGroundSdk.obtainSession(this)
         // All references taken are linked to the activity lifecycle and
         // automatically closed at its destruction.
+        //battery view
+
     }
 
     override fun onStart() {
