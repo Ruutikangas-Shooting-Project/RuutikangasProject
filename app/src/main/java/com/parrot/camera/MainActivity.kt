@@ -50,6 +50,25 @@ import com.parrot.drone.groundsdk.facility.AutoConnection
 import com.parrot.drone.groundsdk.stream.GsdkStreamView
 import com.parrot.drone.groundsdk.stream.GsdkStreamView.PADDING_FILL_BLUR_CROP
 
+import com.parrot.drone.groundsdk.device.peripheral.MediaStore
+import com.parrot.drone.groundsdk.device.peripheral.media.MediaItem
+import com.parrot.drone.groundsdk.device.peripheral.media.MediaDownloader
+import com.parrot.drone.groundsdk.device.peripheral.media.MediaDestination
+import java.io.File
+import java.util.Timer
+import java.util.TimerTask
+import android.os.Environment
+import android.widget.ListView
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import android.Manifest
+import android.content.Intent
+import android.view.View
+import com.parrot.drone.groundsdk.device.peripheral.media.MediaTaskStatus
+
 class MainActivity : AppCompatActivity() {
 
     /** GroundSdk instance. */
@@ -70,6 +89,10 @@ class MainActivity : AppCompatActivity() {
     private var pilotingItfRef: Ref<ManualCopterPilotingItf>? = null
     /** Reference to the current drone battery info instrument. */
     private var droneBatteryInfoRef: Ref<BatteryInfo>? = null
+    /** Reference to the current drone media store. */
+    private var mediaStoreRef: Ref<MediaStore>? = null
+    /** List of media items on the drone. */
+    private var mediaList: List<MediaItem> = emptyList()
 
     // Remote control:
     /** Current remote control instance. */
@@ -78,7 +101,7 @@ class MainActivity : AppCompatActivity() {
     private var rcStateRef: Ref<DeviceState>? = null
     /** Reference to the current remote control battery info instrument. */
     private var rcBatteryInfoRef: Ref<BatteryInfo>? = null
-
+    private val mediaListView by lazy { findViewById<ListView>(R.id.media_list_view) }
     // User interface:
     /** Video stream view. */
     private val streamView by lazy { findViewById<GsdkStreamView>(R.id.stream_view) }
@@ -105,6 +128,8 @@ class MainActivity : AppCompatActivity() {
         droneStatusTxt.text = getString(R.string.status_format, DeviceState.ConnectionState.DISCONNECTED.toString(), "")
         rcStatusTxt.text = getString(R.string.status_format, DeviceState.ConnectionState.DISCONNECTED.toString(), "")
 
+
+
         streamView.paddingFill = PADDING_FILL_BLUR_CROP
 
         takeOffLandBt.setOnClickListener { onTakeOffLandClick() }
@@ -114,7 +139,6 @@ class MainActivity : AppCompatActivity() {
         // All references taken are linked to the activity lifecycle and
         // automatically closed at its destruction.
     }
-
     override fun onStart() {
         super.onStart()
 
@@ -198,6 +222,9 @@ class MainActivity : AppCompatActivity() {
             cameraMode.startMonitoring(drone)
             startStop.startMonitoring(drone)
         }
+
+        // Monitor media store.
+        monitorMediaStore()
     }
 
     /**
@@ -222,6 +249,9 @@ class MainActivity : AppCompatActivity() {
 
         pilotingItfRef?.close()
         pilotingItfRef = null
+
+        mediaStoreRef?.close()
+        mediaStoreRef = null
 
         // Stop monitoring by camera user interface delegates.
         activeState.stopMonitoring()
@@ -473,4 +503,84 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    /**
+     * Monitor the drone's media store.
+     */
+    private fun monitorMediaStore() {
+        mediaStoreRef = drone?.getPeripheral(MediaStore::class.java) { mediaStore ->
+            mediaStore?.browse { list ->
+                mediaList = list ?: emptyList()
+                displayMediaList(mediaList)
+            }
+        }
+    }
+
+    /**
+     * Display the media list in the ListView.
+     */
+    private fun displayMediaList(mediaList: List<MediaItem>) {
+        val mediaNames = mediaList.map { it.name }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mediaNames)
+        mediaListView.adapter = adapter
+
+        mediaListView.setOnItemClickListener { _, _, position, _ ->
+            val selectedMedia = mediaList[position]
+            val mediaResource = selectedMedia.resources.firstOrNull()
+            mediaResource?.let {
+                downloadMediaResource(it, selectedMedia.name)
+            }
+        }
+    }
+
+
+    /**
+     * Download the selected media resource.
+     */
+    private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String) {
+        val droneVideosDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "DroneVideos")
+        if (!droneVideosDir.exists()) {
+            droneVideosDir.mkdirs()
+        }
+
+        val file = File(droneVideosDir, fileName)
+        val mediaDestination = MediaDestination.Companion.path(file)
+
+        mediaStoreRef?.get()?.let { mediaStore ->
+            mediaStore.download(
+                listOf(resource),
+                MediaStore.DownloadType.FULL,
+                mediaDestination
+            ) { downloader ->
+                downloader?.let { mediaDownloader ->
+                    // Check download status
+                    if (mediaDownloader.status == MediaTaskStatus.RUNNING) {
+                        // Periodically check the download progress
+                        Timer().schedule(object : TimerTask() {
+                            override fun run() {
+                                runOnUiThread {
+                                    val progress = mediaDownloader.totalProgress
+                                    val status = mediaDownloader.status
+                                    if (status == MediaTaskStatus.COMPLETE) {
+                                        val downloadedFile = mediaDownloader.downloadedFile
+                                        Toast.makeText(this@MainActivity, "$fileName downloaded to ${downloadedFile?.absolutePath}", Toast.LENGTH_SHORT).show()
+                                        this.cancel()
+                                    } else {
+                                        Toast.makeText(this@MainActivity, "Download progress: $progress%", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }, 0, 1000) // Check every second
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopDroneMonitors()
+        stopRcMonitors()
+    }
 }
+
