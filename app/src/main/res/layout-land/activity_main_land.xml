@@ -16,16 +16,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintDimensionRatio="H,17:9"
         />
-
+    <!--old code and change to fix miika code
+            app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+    -->
     <LinearLayout
         android:id="@+id/status_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@android:color/transparent"
-
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:padding="8dp"
         tools:ignore="MissingConstraints">
 
@@ -42,13 +43,21 @@
                 android:text="Drone"
                 android:textColor="@android:color/white"
                 android:layout_marginEnd="8dp"/>
-
-            <TextView
+            <!--
+            old code
+                        <TextView
                 android:id="@+id/droneStateTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
                 tools:text="DISCONNECTED"/>
+            -->
+            <TextView
+                android:id="@+id/droneStatusTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                tools:text="DISCONNECTED - "/>
         </LinearLayout>
 
         <LinearLayout
@@ -64,13 +73,22 @@
                 android:text="Remote"
                 android:textColor="@android:color/white"
                 android:layout_marginEnd="8dp"/>
-
+        <!-- old code
             <TextView
                 android:id="@+id/rcStateTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
                 tools:text="DISCONNECTED"/>
+                -->
+
+            <TextView
+                android:id="@+id/rcStatusTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                tools:text="DISCONNECTED - "/>
+
         </LinearLayout>
 
         <LinearLayout
@@ -155,5 +173,13 @@
             android:enabled="false"
             android:text="@string/start_photo"/>
     </LinearLayout>
+    <!--new code to give media list view-->
+    <ListView
+        android:id="@+id/media_list_view"
+        android:layout_width="409dp"
+        android:layout_height="183dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="72dp"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
