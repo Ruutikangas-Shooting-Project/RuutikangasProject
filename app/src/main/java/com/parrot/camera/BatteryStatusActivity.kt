@@ -1,6 +1,8 @@
 package com.parrot.camera
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +34,12 @@ class BatteryStatusActivity :AppCompatActivity() {
         //cancel progress to let battery show text first
         //droneBatteryProgress = findViewById(R.id.droneBatteryProgress)
         //remoteBatteryProgress = findViewById(R.id.remoteBatteryProgress)
+        // link to main fly model (id is connect to drone)
+        val flyViewBtn = findViewById<Button>(R.id.connectDroneBtn)
+        flyViewBtn.setOnClickListener {
+            val intent = Intent (this, MainActivity::class.java)
+            startActivity(intent)
+        }
 
         updateBatteryStatus()
 
