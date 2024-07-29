@@ -35,38 +35,47 @@
         tools:ignore="MissingConstraints" />
 -->
 
+    <!-- TextView for Drone Battery -->
     <Button
         android:id="@+id/connectDroneBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Connect to Drone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.499"
+        android:layout_marginStart="176dp"
+        android:layout_marginTop="40dp"
+        android:text="Fly View"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/droneBatteryTxt" />
+
+    <Button
+        android:id="@+id/galleryBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="184dp"
+        android:text="Gallery"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/remoteBatteryTxt" />
 
     <TextView
         android:id="@+id/droneBatteryTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="276dp"
-        android:text="Drone Battery: --%"
-        app:layout_constraintHorizontal_bias="0.169"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="Drone battery : --%"
+        app:layout_constraintTop_toBottomOf="@id/droneImgView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/remoteBatteryTxt"
+        app:layout_constraintHorizontal_bias="0.5" />
 
+    <!-- TextView for Remote Battery -->
     <TextView
         android:id="@+id/remoteBatteryTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Remote Battery: --%"
-        app:layout_constraintHorizontal_bias="0.527"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/droneBatteryTxt" />
+        android:text="Remote battery : --%"
+        app:layout_constraintTop_toBottomOf="@id/droneImgView"
+        app:layout_constraintStart_toEndOf="@id/droneBatteryTxt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5" />
     <!-- cancel this bar
         <ProgressBar
             android:id="@+id/remoteBatteryProgress"
