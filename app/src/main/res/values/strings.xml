@@ -22,4 +22,6 @@
 
     <string name="device_state">%1$s - Battery: %2$d%%</string>
     <string name="device_disconnected">DISCONNECTED - Battery: %1$d%%</string>
+
+    <string name="fly_view">Fly View</string>
 </resources>

@@ -2,6 +2,7 @@ package com.parrot.camera
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -20,8 +21,6 @@ class BatteryStatusActivity :AppCompatActivity() {
     //follow the main to add groundsdk to get sdk
     private lateinit var groundSdk: GroundSdk
 
-    //cancel progress to let battery show text first
-    //private lateinit var remoteBatteryProgress : ProgressBar
 
     override fun onCreate(saveInstanceState: Bundle?)  {
         super.onCreate(saveInstanceState)
@@ -46,20 +45,7 @@ class BatteryStatusActivity :AppCompatActivity() {
     }
 
     private fun updateBatteryStatus()  {
-        //old  code
-        //val droneBatteryTxt = droneBatteryInfo
-        //val droneBatteryTxt = droneBatteryInfo
-        //val remoteBatteryTxt = remoteBatteryInfo
-        //val droneBatterylevel = 75
-        //val remoteBatteryTxt = remoteBatteryInfo
-        //val remoteBatteryLevel = 65
-        //droneBatteryInfo.text = "Drone Battery: $droneBatterylevel%"
-        //remoteBatteryInfo.text =  "Remote Battery: $remoteBatteryLevel%"
-        //droneBatteryTxt.text = "Drone Battery: $droneBatteryInfo%"
-        //remoteBatteryTxt.text = "Remote Battery: $remoteBatteryInfo%"
-        //cancel progress to let battery show text first
-        //remoteBatteryProgress.progress = remoteBatteryLevel
-        //droneBatteryProgress.progress = droneBatterylevel
+        groundSdk = ManagedGroundSdk.obtainSession(this)
 
         //auto connect
         val autoConnection = groundSdk.getFacility(AutoConnection::class.java)
@@ -75,20 +61,48 @@ class BatteryStatusActivity :AppCompatActivity() {
                     droneBatteryInfo.text = "Drone Battery: --%"
                 }
             }
-            facility.remoteControl?.getInstrument(BatteryInfo::class.java) { batteryInfo ->
+           facility.remoteControl?.let {
+               Log.d("BatteryStatus", "Remote control is connected")
+               it.getInstrument(BatteryInfo::class.java) {batteryInfo ->
+                   batteryInfo?.let { info ->
+                       remoteBatteryInfo.text ="Remote Battery: ${info.charge}%"
+                   }?:run {
+                       remoteBatteryInfo.text = "Remote Battery: --%"
+                   }
+
+               }
+           }
+
+        }
+
+    }
+}
+
+//welcome page code
+/*
+ facility.remoteControl?.getInstrument(BatteryInfo::class.java) { batteryInfo ->
                 batteryInfo?.let { info ->
                     remoteBatteryInfo.text = "Remote Battery:$(info.charge)%"
                 }?:run {
                     remoteBatteryInfo.text="Remote Battery: --%"
                 }
-
             }
-        }
+* */
+//old code, keep it here
+/*
 
-
-
-    }
-}
+            facility.remoteControl?.let {
+                Log.d("BatteryStatus", "Remote control is connected")
+                it.getInstrument(BatteryInfo::class.java){batteryInfo ->
+                    batteryInfo?.let { info->
+                        remoteBatteryInfo.text = "Remote Battery: ${info.charge}%"
+                    }?:run {
+                        remoteBatteryInfo.text = "Remote Battery: --%"
+                        Log.d("BatteryStatus", "Failed to retrieve battery information for remote control.")
+                    }
+                }
+            } ?: Log.d("BatteryStatus", "Remote Control is NOT connected.")
+*/
 
 /*
   groundSdk.getFacility(AutoConnection::class.java)  {

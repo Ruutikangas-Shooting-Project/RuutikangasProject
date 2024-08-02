@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     tools:ignore="MissingDefaultResource">
+
+    <!--use img to show -->
     <ImageView
         android:id="@+id/droneImgView"
         android:layout_width="200dp"
@@ -18,22 +20,6 @@
 
     <!-- Button to go to MainActivity -->
 
-    <!--use img to show -->
-    <!-- cancel this bar
-    <ProgressBar
-        android:id="@+id/droneBatteryProgress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="16dp"
-        android:max="100"
-        android:progressDrawable="@drawable/battery_progress"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
--->
 
     <!-- TextView for Drone Battery -->
     <Button
@@ -42,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="176dp"
         android:layout_marginTop="40dp"
-        android:text="Fly View"
+        android:text="@string/fly_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/droneBatteryTxt" />
 
@@ -76,19 +62,5 @@
         app:layout_constraintStart_toEndOf="@id/droneBatteryTxt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5" />
-    <!-- cancel this bar
-        <ProgressBar
-            android:id="@+id/remoteBatteryProgress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="0dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="36dp"
-            android:max="100"
-            android:progressDrawable="@drawable/battery_progress"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/droneBatteryProgress" />
--->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
