@@ -16,4 +16,5 @@
     <string name="take_off">Take off</string>
     <string name="land">land</string>
     <string name="video" />
+    <string name="title_activity_gallery">GalleryActivity</string>
 </resources>

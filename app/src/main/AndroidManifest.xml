@@ -9,17 +9,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <!--old code, remove from original code-->
-        <!--android:screenOrientation= "sensorLandscape"
+        <activity
+            android:name="com.parrot.camera.GalleryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_gallery"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" /> <!-- old code, remove from original code -->
+        <!--
+android:screenOrientation= "sensorLandscape"
             android:configChanges="orientation"
         -->
-        <activity android:name="com.parrot.camera.MainActivity"
+        <activity
+            android:name="com.parrot.camera.MainActivity"
             android:configChanges="orientation"
-            android:screenOrientation="landscape"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
