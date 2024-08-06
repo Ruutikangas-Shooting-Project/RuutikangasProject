@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    tools:ignore="MissingDefaultResource">
+    tools:context=".BatteryStatusActivity">
+
     <ImageView
         android:id="@+id/droneImgView"
         android:layout_width="200dp"
@@ -13,29 +13,8 @@
         android:src="@drawable/drone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Button to go to MainActivity -->
-
-    <!--use img to show -->
-    <!-- cancel this bar
-    <ProgressBar
-        android:id="@+id/droneBatteryProgress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="16dp"
-        android:max="100"
-        android:progressDrawable="@drawable/battery_progress"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
--->
-
-    <!-- TextView for Drone Battery -->
     <Button
         android:id="@+id/connectDroneBtn"
         android:layout_width="wrap_content"
@@ -74,7 +53,6 @@
         app:layout_constraintEnd_toStartOf="@+id/remoteBatteryTxt"
         app:layout_constraintHorizontal_bias="0.5" />
 
-    <!-- TextView for Remote Battery -->
     <TextView
         android:id="@+id/remoteBatteryTxt"
         android:layout_width="wrap_content"
@@ -84,19 +62,4 @@
         app:layout_constraintStart_toEndOf="@id/droneBatteryTxt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5" />
-    <!-- cancel this bar
-        <ProgressBar
-            android:id="@+id/remoteBatteryProgress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="0dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="36dp"
-            android:max="100"
-            android:progressDrawable="@drawable/battery_progress"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/droneBatteryProgress" />
--->
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

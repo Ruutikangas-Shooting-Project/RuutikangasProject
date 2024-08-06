@@ -13,19 +13,33 @@
         <!--old code, remove from original code-->
         <!--android:screenOrientation= "sensorLandscape"
             android:configChanges="orientation"
+            將intent filter取消,換到battery那邊
+                        <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         -->
         <activity android:name="com.parrot.camera.MainActivity"
             android:configChanges="orientation"
             android:screenOrientation="landscape"
             android:exported="true">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
+        <!--Declare to use BatteryStatusActivity
+        把 android:exported="false"改成true
+        -->
+        <activity android:name="com.parrot.camera.BatteryStatusActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="landscape"
+            android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!--Declare to use BatteryStatusActivity-->
-        <activity android:name="com.parrot.camera.BatteryStatusActivity"
-            android:exported="false">
         </activity>
     </application>
 

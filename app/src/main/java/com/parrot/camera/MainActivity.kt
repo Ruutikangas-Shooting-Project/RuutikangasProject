@@ -32,9 +32,11 @@
 
 package com.parrot.camera
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.parrot.drone.groundsdk.GroundSdk
 import com.parrot.drone.groundsdk.ManagedGroundSdk
 import com.parrot.drone.groundsdk.Ref
@@ -50,10 +52,6 @@ import com.parrot.drone.groundsdk.facility.AutoConnection
 import com.parrot.drone.groundsdk.stream.GsdkStreamView
 import com.parrot.drone.groundsdk.stream.GsdkStreamView.PADDING_FILL_BLUR_CROP
 
-import android.widget.ListView
-import android.content.Intent
-
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var groundSdk: GroundSdk
@@ -67,7 +65,6 @@ class MainActivity : AppCompatActivity() {
     private var rc: RemoteControl? = null
     private var rcStateRef: Ref<DeviceState>? = null
     private var rcBatteryInfoRef: Ref<BatteryInfo>? = null
-    private val mediaListView by lazy { findViewById<ListView>(R.id.media_list_view) }
     private val streamView by lazy { findViewById<GsdkStreamView>(R.id.stream_view) }
     private val droneStatusTxt by lazy { findViewById<TextView>(R.id.droneStatusTxt) }
     private val rcStatusTxt by lazy { findViewById<TextView>(R.id.rcStatusTxt) }
@@ -75,7 +72,6 @@ class MainActivity : AppCompatActivity() {
     private val activeState by lazy { ActiveState(findViewById(R.id.activeTxt)) }
     private val cameraMode by lazy { CameraMode(findViewById(R.id.photoMode), findViewById(R.id.recordingMode)) }
     private val startStop by lazy { StartStop(findViewById(R.id.startStopBtn)) }
-    private lateinit var mediaManager: MediaManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,8 +91,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         groundSdk = ManagedGroundSdk.obtainSession(this)
-
-        mediaManager = MediaManager(this, mediaListView)
     }
 
     override fun onStart() {
@@ -152,10 +146,6 @@ class MainActivity : AppCompatActivity() {
             cameraMode.startMonitoring(drone)
             startStop.startMonitoring(drone)
         }
-
-        drone?.let {
-            mediaManager.monitorMediaStore(it)
-        }
     }
 
     private fun stopDroneMonitors() {
@@ -174,8 +164,6 @@ class MainActivity : AppCompatActivity() {
         activeState.stopMonitoring()
         cameraMode.stopMonitoring()
         startStop.stopMonitoring()
-
-        mediaManager.close()
     }
 
     private fun monitorDroneState() {

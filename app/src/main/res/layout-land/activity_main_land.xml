@@ -152,12 +152,4 @@
             android:text="@string/start_photo"/>
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/media_list_view"
-        android:layout_width="409dp"
-        android:layout_height="183dp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="72dp"
-        tools:ignore="MissingConstraints" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
