@@ -9,8 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.parrot.drone.groundsdk.GroundSdk
 import com.parrot.drone.groundsdk.ManagedGroundSdk
 import com.parrot.drone.groundsdk.device.instrument.BatteryInfo
+import com.parrot.drone.groundsdk.device.peripheral.MediaStore
+import com.parrot.drone.groundsdk.device.peripheral.media.MediaItem
 import com.parrot.drone.groundsdk.facility.AutoConnection
 import java.time.Instant
+import java.util.TimerTask
 
 class BatteryStatusActivity :AppCompatActivity() {
     private lateinit var droneBatteryInfo: TextView
