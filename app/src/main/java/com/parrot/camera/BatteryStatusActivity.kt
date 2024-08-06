@@ -15,11 +15,12 @@ import java.time.Instant
 
 class BatteryStatusActivity :AppCompatActivity() {
     private lateinit var droneBatteryInfo: TextView
-    //cancel progress to let battery show text first
-    //private lateinit var droneBatteryProgress: ProgressBar
     private lateinit var remoteBatteryInfo: TextView
+    private lateinit var connectStatusTxt:TextView
     //follow the main to add groundsdk to get sdk
     private lateinit var groundSdk: GroundSdk
+    private lateinit var connectDroneBtn :Button
+    private lateinit var flyViewBtn : Button
 
 
     override fun onCreate(saveInstanceState: Bundle?)  {
@@ -30,98 +31,42 @@ class BatteryStatusActivity :AppCompatActivity() {
 
         droneBatteryInfo = findViewById(R.id.droneBatteryTxt)
         remoteBatteryInfo = findViewById(R.id.remoteBatteryTxt)
-        //cancel progress to let battery show text first
-        //droneBatteryProgress = findViewById(R.id.droneBatteryProgress)
-        //remoteBatteryProgress = findViewById(R.id.remoteBatteryProgress)
-        // link to main fly model (id is connect to drone)
-        val flyViewBtn = findViewById<Button>(R.id.connectDroneBtn)
+        connectStatusTxt = findViewById(R.id.connectStatusTxt)
+        flyViewBtn = findViewById(R.id.flyViewBtn)
+        connectDroneBtn = findViewById(R.id.connectDroneBtn)
+
+        connectDroneBtn.setOnClickListener { connectToBatteryInfo() }
+
+        // link to main fly model (id change to flyviewBtn)
+        val flyViewBtn = findViewById<Button>(R.id.flyViewBtn)
         flyViewBtn.setOnClickListener {
             val intent = Intent (this, MainActivity::class.java)
             startActivity(intent)
         }
-
-        updateBatteryStatus()
-
     }
-
-    private fun updateBatteryStatus()  {
-        groundSdk = ManagedGroundSdk.obtainSession(this)
-
-        //auto connect
+    private fun connectToBatteryInfo(){
         val autoConnection = groundSdk.getFacility(AutoConnection::class.java)
-        autoConnection?.let {facility->
-            facility.start()
-            // Subscribe to drone's battery information
+        autoConnection?.start()
+        autoConnection?.let {facility ->
+            updateConnectStatus(facility.drone !=null && facility.remoteControl != null)
             facility.drone?.getInstrument(BatteryInfo::class.java) { batteryInfo ->
-                batteryInfo?.let { info ->
-                    // Display drone battery level
-                    droneBatteryInfo.text = "Drone Battery: ${info.charge}%"
-                } ?: run {
-                    // Display default message if battery info is not available
-                    droneBatteryInfo.text = "Drone Battery: --%"
-                }
+                updateBatteryInfo(batteryInfo, droneBatteryInfo, "Drone Battery")
             }
-           facility.remoteControl?.let {
-               Log.d("BatteryStatus", "Remote control is connected")
-               it.getInstrument(BatteryInfo::class.java) {batteryInfo ->
-                   batteryInfo?.let { info ->
-                       remoteBatteryInfo.text ="Remote Battery: ${info.charge}%"
-                   }?:run {
-                       remoteBatteryInfo.text = "Remote Battery: --%"
-                   }
-
-               }
-           }
+            facility.remoteControl?.getInstrument(BatteryInfo::class.java) { batteryInfo ->
+                updateBatteryInfo(batteryInfo, droneBatteryInfo, "Remote Battery")
+            }
 
         }
+    }
+    private fun updateConnectStatus(isConnected: Boolean) {
+        connectStatusTxt.text = if (isConnected) "Connected" else "Disconnected"
 
     }
+
+        private fun updateBatteryInfo(batteryInfo: BatteryInfo?, batteryTextView: TextView, label: String){
+        batteryTextView.text = batteryInfo?.let {info ->
+            "$label: ${info.charge}%"
+        }?:"$label: --%"
+    }
+
 }
-
-//welcome page code
-/*
- facility.remoteControl?.getInstrument(BatteryInfo::class.java) { batteryInfo ->
-                batteryInfo?.let { info ->
-                    remoteBatteryInfo.text = "Remote Battery:$(info.charge)%"
-                }?:run {
-                    remoteBatteryInfo.text="Remote Battery: --%"
-                }
-            }
-* */
-//old code, keep it here
-/*
-
-            facility.remoteControl?.let {
-                Log.d("BatteryStatus", "Remote control is connected")
-                it.getInstrument(BatteryInfo::class.java){batteryInfo ->
-                    batteryInfo?.let { info->
-                        remoteBatteryInfo.text = "Remote Battery: ${info.charge}%"
-                    }?:run {
-                        remoteBatteryInfo.text = "Remote Battery: --%"
-                        Log.d("BatteryStatus", "Failed to retrieve battery information for remote control.")
-                    }
-                }
-            } ?: Log.d("BatteryStatus", "Remote Control is NOT connected.")
-*/
-
-/*
-  groundSdk.getFacility(AutoConnection::class.java)  {
-      it?.let {autoConnection ->
-          autoConnection.start()
-          //monitor drone battery
-          autoConnection.drone?.getInstrument(BatteryInfo::class.java)
-          {batteryInfo ->
-              droneBatteryInfo?.let { droneBatteryInfo->
-                  val droneBatteryInfo =info.droneBatterylevel
-                  droneBatteryInfo.text = "Drone Battery: $droneBatterylevel%"
-              }
-          }
-          // Monitor remote control battery info
-          autoConnection.remoteControl?.getInstrument(BatteryInfo::class.java) { batteryInfo ->
-              batteryInfo?.let { info ->
-                  val batteryLevel = info.batteryLevel
-                  remoteBatteryInfo.text = "Remote Battery: $batteryLevel%"
-              }
-          }
-      }
-  }*/
