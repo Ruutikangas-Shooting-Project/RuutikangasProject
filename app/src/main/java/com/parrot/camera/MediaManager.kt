@@ -11,6 +11,7 @@ import com.parrot.drone.groundsdk.device.peripheral.MediaStore
 import com.parrot.drone.groundsdk.device.peripheral.media.MediaDestination
 import com.parrot.drone.groundsdk.device.peripheral.media.MediaItem
 import com.parrot.drone.groundsdk.device.peripheral.media.MediaTaskStatus
+import com.parrot.drone.groundsdk.internal.device.peripheral.DtedStoreCore
 import java.io.File
 import java.util.Timer
 import java.util.TimerTask
@@ -19,8 +20,9 @@ class MediaManager(
     private val context: Context,
     private val mediaListView: ListView
 ) {
+    var mediaList: List<MediaItem> = emptyList()
+        private set
     private var mediaStoreRef: Ref<MediaStore>? = null
-    private var mediaList: List<MediaItem> = emptyList()
 
     fun monitorMediaStore(drone: Drone) {
         mediaStoreRef = drone.getPeripheral(MediaStore::class.java) { mediaStore ->
@@ -46,12 +48,27 @@ class MediaManager(
     }
 
     private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String) {
-        val droneVideosDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "DroneVideos")
-        if (!droneVideosDir.exists()) {
-            droneVideosDir.mkdirs()
+        val directory = when (resource.format) {
+            MediaItem.Resource.Format.MP4 -> {
+                File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES),
+                    "DroneVideos"
+                )
+            }
+            MediaItem.Resource.Format.JPG -> {
+                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "DronePhotos")
+            }
+            else -> {
+                Toast.makeText(context, "Unsupported file format", Toast.LENGTH_SHORT).show()
+                return
+            }
         }
 
-        val file = File(droneVideosDir, fileName)
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+
+        val file = File(directory, fileName)
         val mediaDestination = MediaDestination.Companion.path(file)
 
         mediaStoreRef?.get()?.let { mediaStore ->
@@ -66,7 +83,7 @@ class MediaManager(
                         // Periodically check the download progress
                         Timer().schedule(object : TimerTask() {
                             override fun run() {
-                                (context as? MainActivity)?.runOnUiThread {
+                                (context as? MediaListActivity)?.runOnUiThread {
                                     val progress = mediaDownloader.totalProgress
                                     val status = mediaDownloader.status
                                     if (status == MediaTaskStatus.COMPLETE) {
@@ -85,8 +102,25 @@ class MediaManager(
         }
     }
 
+    fun deleteMedia(resources: Collection<MediaItem.Resource>) {
+        mediaStoreRef?.get()?.delete(resources) { deleter ->
+            deleter?.let { mediaDeleter ->
+                if (mediaDeleter.status == MediaTaskStatus.COMPLETE) {
+                    Toast.makeText(context, "Deletion complete", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Deletion failed", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     fun close() {
         mediaStoreRef?.close()
         mediaStoreRef = null
     }
 }
+
+
+
+
+
