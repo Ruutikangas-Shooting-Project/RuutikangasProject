@@ -3,7 +3,6 @@ package com.parrot.camera
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.parrot.drone.groundsdk.GroundSdk
@@ -15,11 +14,9 @@ class BatteryStatusActivity : AppCompatActivity() {
     private lateinit var droneBatteryInfo: TextView
     private lateinit var remoteBatteryInfo: TextView
     private lateinit var groundSdk: GroundSdk
-    private lateinit var mediaManager: MediaManager
-    private val mediaListView by lazy { findViewById<ListView>(R.id.media_list_view) }
 
-    override fun onCreate(saveInstanceState: Bundle?) {
-        super.onCreate(saveInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_battery_status)
 
         groundSdk = ManagedGroundSdk.obtainSession(this)
@@ -33,41 +30,49 @@ class BatteryStatusActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        mediaManager = MediaManager(this, mediaListView)
+        val galleryBtn = findViewById<Button>(R.id.galleryBtn)
+        galleryBtn.setOnClickListener {
+            val intent = Intent(this, MediaListActivity::class.java)
+            startActivity(intent)
+        }
 
         updateBatteryStatus()
     }
 
     private fun updateBatteryStatus() {
-        val autoConnection = groundSdk.getFacility(AutoConnection::class.java)
-        autoConnection?.let { facility ->
-            facility.start()
-            facility.drone?.getInstrument(BatteryInfo::class.java) { batteryInfo ->
-                batteryInfo?.let { info ->
-                    droneBatteryInfo.text = "Drone Battery: ${info.charge}%"
-                } ?: run {
-                    droneBatteryInfo.text = "Drone Battery: --%"
+        groundSdk.getFacility(AutoConnection::class.java) { autoConnection ->
+            autoConnection?.let {
+                if (it.status != AutoConnection.Status.STARTED) {
+                    it.start()
                 }
-            }
-            facility.remoteControl?.getInstrument(BatteryInfo::class.java) { batteryInfo ->
-                batteryInfo?.let { info ->
-                    remoteBatteryInfo.text = "Remote Battery: ${info.charge}%"
-                } ?: run {
-                    remoteBatteryInfo.text = "Remote Battery: --%"
-                }
-            }
 
-            facility.drone?.let {
-                mediaManager.monitorMediaStore(it)
+                it.drone?.let { drone ->
+                    drone.getInstrument(BatteryInfo::class.java) { batteryInfo ->
+                        batteryInfo?.let { info ->
+                            droneBatteryInfo.text = "Drone Battery: ${info.charge}%"
+                        }
+                    }
+                }
+
+                it.remoteControl?.let { remoteControl ->
+                    remoteControl.getInstrument(BatteryInfo::class.java) { batteryInfo ->
+                        batteryInfo?.let { info ->
+                            remoteBatteryInfo.text = "Remote Battery: ${info.charge}%"
+                        }
+                    }
+                }
             }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaManager.close()
     }
 }
+
+
+
+
 
 
 
