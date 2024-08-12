@@ -136,11 +136,11 @@ class MainActivity : AppCompatActivity() {
         //add battery view here
         //mine has conflicts with new code, need to check how to fix
         //battery view, to link to other view
-        val batteryStatusButton:Button = findViewById(R.id.batteryStatusButton)
-        batteryStatusButton.setOnClickListener {
-            val intent = Intent(this@MainActivity, BatteryStatusActivity::class.java)
-            startActivity(intent)
-        }
+        //val batteryStatusButton:Button = findViewById(R.id.batteryStatusButton)
+        //batteryStatusButton.setOnClickListener {
+        //    val intent = Intent(this@MainActivity, BatteryStatusActivity::class.java)
+        //    startActivity(intent)
+        //}
         // Get a GroundSdk session.
         groundSdk = ManagedGroundSdk.obtainSession(this)
         // All references taken are linked to the activity lifecycle and
