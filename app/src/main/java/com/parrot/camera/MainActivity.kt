@@ -84,12 +84,6 @@ class MainActivity : AppCompatActivity() {
 
         takeOffLandBt.setOnClickListener { onTakeOffLandClick() }
 
-        val batteryStatusButton: Button = findViewById(R.id.batteryStatusButton)
-        batteryStatusButton.setOnClickListener {
-            val intent = Intent(this@MainActivity, BatteryStatusActivity::class.java)
-            startActivity(intent)
-        }
-
         groundSdk = ManagedGroundSdk.obtainSession(this)
     }
 
