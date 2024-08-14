@@ -15,7 +15,7 @@
     <!-- Default button state -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/buttonBackground" />
+            <solid android:color="@color/colorAccent" />
             <corners android:radius="8dp" /> <!-- Increased radius for better landscape appearance -->
             <padding
                 android:left="16dp"

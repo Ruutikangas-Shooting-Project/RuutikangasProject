@@ -1,13 +1,23 @@
 <resources>
-    <string name="aeroaim_title">AeroAim</string>
+    <string name="app_name">AeroAim</string>
     <string name="welcome_message">Welcome to Ruutikangas Shooting Center</string>
     <string name="drone_battery_text">Drone battery: --%</string>
     <string name="remote_battery_text">Remote battery: --%</string>
     <string name="drone_status">Drone: Disconnected</string>
     <string name="remote_status">Remote: Disconnected</string>
     <string name="drone_active_status">Drone Active: False</string>
-    <string name="fly_view_button">Fly View</string>
+    <string name="fly_view">Fly View</string>
     <string name="gallery_button">Gallery</string>
     <string name="drone_image_description">Image of a drone</string>
-
+    <string name="status_format">%1$s - %2$s</string>
+    <string name="photo">Photo</string>
+    <string name="recording">Recording</string>
+    <string name="start_photo">Start photo capture</string>
+    <string name="percentage">%1$d %%</string>
+    <string name="take_off">Take off</string>
+    <string name="land">land</string>
+    <string name="unavailable">Unavailable</string>
+    <string name="stop_photo">Stop photo capture</string>
+    <string name="start_recording">Start recording</string>
+    <string name="stop_recording">Stop recording</string>
 </resources>
