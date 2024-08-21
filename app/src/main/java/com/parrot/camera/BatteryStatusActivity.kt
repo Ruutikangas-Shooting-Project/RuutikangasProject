@@ -2,16 +2,17 @@ package com.parrot.camera
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import android.widget.Button
-import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.parrot.drone.groundsdk.GroundSdk
 import com.parrot.drone.groundsdk.ManagedGroundSdk
+import com.parrot.drone.groundsdk.device.DeviceState
 import com.parrot.drone.groundsdk.device.instrument.BatteryInfo
 import com.parrot.drone.groundsdk.facility.AutoConnection
-import java.time.Instant
 
 class BatteryStatusActivity :AppCompatActivity() {
     //follow the main to add groundsdk to get sdk
@@ -35,7 +36,6 @@ class BatteryStatusActivity :AppCompatActivity() {
         remoteBatteryInfo = findViewById(R.id.remoteBatteryTxt)
         //connectStatusTxt = findViewById(R.id.connectStatusTxt)
         flyViewBtn = findViewById(R.id.connectDroneBtn)
-        //connectDroneBtn = findViewById(R.id.connectDroneBtn)
 
         // link to main fly model (id change to flyviewBtn)
         val flyViewBtn = findViewById<Button>(R.id.connectDroneBtn)
@@ -44,10 +44,26 @@ class BatteryStatusActivity :AppCompatActivity() {
             startActivity(intent)
         }
         val galleryBtn = findViewById<Button>(R.id.galleryBtn)
+        val galleryBtnOverlay = findViewById<View>(R.id.galleryBtnOverlay)
+        galleryBtnOverlay.setOnClickListener {
+            if (!galleryBtn.isEnabled) {
+                Toast.makeText(this, "Pls connect to drone", Toast.LENGTH_SHORT).show()
+            }
+        }
+       /* galleryBtn.setOnClickListener {
+            if (!galleryBtn.isEnabled) {
+                Toast.makeText(this, "Pls connect to drone", Toast.LENGTH_SHORT).show()
+            }else{
+                val intent = Intent(this, MediaListActivity::class.java)
+                startActivity(intent)
+            }
+        }*/
+
         galleryBtn.setOnClickListener {
             val intent = Intent(this, MediaListActivity::class.java)
             startActivity(intent)
         }
+
         updateBatteryStatus()
     }
     private fun updateBatteryStatus(){
@@ -56,6 +72,13 @@ class BatteryStatusActivity :AppCompatActivity() {
                 if (it.status != AutoConnection.Status.STARTED) {
                     it.start()
                 }
+
+                //0821 new code check if connect to drone
+                //val droneConnected = it.drone?.state?.connectionState == DeviceState.ConnectionState.CONNECTED
+                //findViewById<Button>(R.id.galleryBtn).isEnabled = droneConnected
+                val droneConnected = it.drone?.state?.connectionState == DeviceState.ConnectionState.CONNECTED
+                updateBtnState(droneConnected)
+
                 it.drone?.let {drone->
                     drone.getInstrument(BatteryInfo::class.java) {batteryInfo->
                         batteryInfo?.let {info->
@@ -75,6 +98,21 @@ class BatteryStatusActivity :AppCompatActivity() {
 
         }
 
+        }
+
+    }
+    private fun updateBtnState(droneConnected: Boolean) {
+       //0821 new code check if connect to drone
+        val galleryButton: Button = findViewById(R.id.galleryBtn)
+        val galleryBtnOverlay : View = findViewById(R.id.galleryBtnOverlay)
+
+        galleryButton.isEnabled = droneConnected
+        galleryBtnOverlay.visibility = if (droneConnected) View.GONE else View.VISIBLE
+
+        galleryButton.background = if (droneConnected){
+            ContextCompat.getDrawable(this, R.drawable.btn_connected)
+        }else {
+            ContextCompat.getDrawable(this, R.drawable.btn_disconnted)
         }
 
     }

@@ -45,6 +45,7 @@ class MediaListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media_list)
         //checkPermission()
+        //ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
 
         groundSdk = ManagedGroundSdk.obtainSession(this)
@@ -192,15 +193,24 @@ override fun onContextItemSelected(item: MenuItem): Boolean {
 }
 
 //0820 new code
-
+private  fun deleteSelectedMedia() {
+    selectedMediaItem?.let { mediaItem ->
+        if (mediaItem.resources.isEmpty()) {
+            Toast.makeText(this, "No file available to delete", Toast.LENGTH_SHORT).show()
+        }else{
+            mediaManager.deleteMedia(mediaItem.resources)
+        }
+}?: Toast.makeText(this, "no media item selected", Toast.LENGTH_SHORT).show()
+}
 
 //0812 old code, change due to new code
+    /*
 private fun deleteSelectedMedia() {
     selectedMediaItem?.let { mediaItem ->
         val resources = mediaItem.resources
         mediaManager.deleteMedia(resources)
     }
-}
+}*/
 }
 
 
