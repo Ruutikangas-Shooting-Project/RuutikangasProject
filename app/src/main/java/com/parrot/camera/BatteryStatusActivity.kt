@@ -14,11 +14,13 @@ import com.parrot.drone.groundsdk.facility.AutoConnection
 import java.time.Instant
 
 class BatteryStatusActivity :AppCompatActivity() {
+    //follow the main to add groundsdk to get sdk
+    private lateinit var groundSdk: GroundSdk
+
     private lateinit var droneBatteryInfo: TextView
     private lateinit var remoteBatteryInfo: TextView
     //private lateinit var connectStatusTxt:TextView
-    //follow the main to add groundsdk to get sdk
-    private lateinit var groundSdk: GroundSdk
+
     private lateinit var connectDroneBtn :Button
     private lateinit var flyViewBtn : Button
 
@@ -67,9 +69,7 @@ class BatteryStatusActivity :AppCompatActivity() {
 
                     }
                 }
-
                     }
-
 
                 }
 
@@ -78,11 +78,8 @@ class BatteryStatusActivity :AppCompatActivity() {
         }
 
     }
-
     override fun onDestroy() {
         super.onDestroy()
     }
-
-
 
 }

@@ -1,5 +1,6 @@
 package com.parrot.camera
 
+import android.app.Activity
 import android.content.Context
 import android.os.Environment
 import android.widget.ArrayAdapter
@@ -15,6 +16,8 @@ import com.parrot.drone.groundsdk.internal.device.peripheral.DtedStoreCore
 import java.io.File
 import java.util.Timer
 import java.util.TimerTask
+import kotlin.concurrent.schedule
+import kotlin.concurrent.timerTask
 
 class MediaManager(
     private val context: Context,
@@ -46,7 +49,52 @@ class MediaManager(
             }
         }
     }
+    //8-20 test new
+    private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String){
+        val directoryType = when (resource.format) {
+            MediaItem.Resource.Format.MP4-> Environment.DIRECTORY_MOVIES
+            MediaItem.Resource.Format.JPG -> Environment.DIRECTORY_PICTURES
+            else -> {
+                Toast.makeText(context, "File format is not supported", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+        val  directory = File(context.getExternalFilesDir(directoryType), "DroneMedia")
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+        val file = File(directory, fileName)
+        val mediaDestination = MediaDestination.path(file)
 
+        mediaStoreRef?.get()?.let { mediaStore ->
+            mediaStore.download(
+                listOf(resource),
+                MediaStore.DownloadType.FULL,
+                mediaDestination
+            ) { downloader ->
+                downloader?.let { mediaDownloader ->
+                    val timer = Timer()
+                    timer.schedule(timerTask {
+                        (context as Activity).runOnUiThread {
+                            val progress = mediaDownloader.totalProgress
+                            val status = mediaDownloader.status
+                            if (status == MediaTaskStatus.COMPLETE) {
+                                val downloadedFile = mediaDownloader.downloadedFile
+                                Toast.makeText(context, "$fileName downloaded to ${downloadedFile?.absolutePath}", Toast.LENGTH_SHORT).show()
+                                timer.cancel()
+                            } else {
+                                Toast.makeText(context, "Download status: $progress%", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }, 0, 1000)
+
+                }
+            }
+        }
+    }
+
+//old code
+    /*
     private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String) {
         val directory = when (resource.format) {
             MediaItem.Resource.Format.MP4 -> {
@@ -101,7 +149,7 @@ class MediaManager(
             }
         }
     }
-
+*/
     fun deleteMedia(resources: Collection<MediaItem.Resource>) {
         mediaStoreRef?.get()?.delete(resources) { deleter ->
             deleter?.let { mediaDeleter ->
@@ -119,5 +167,4 @@ class MediaManager(
         mediaStoreRef = null
     }
 }
-
 

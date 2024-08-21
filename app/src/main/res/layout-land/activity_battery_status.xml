@@ -6,93 +6,104 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     tools:ignore="MissingDefaultResource">
-
-    <!--use img to show -->
-
-    <!-- cancel this Button and TextView
-         <Button
-        android:id="@+id/connectDroneBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="300dp"
-        android:text="Connect to drone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/remoteBatteryTxt" />
-            <TextView
-        android:id="@+id/connectStatusTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBaseline_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/connectDroneBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
-
-     -->
-
+    <!--use img to show
+    app:layout_constraintHorizontal_bias="0.5"
+    -->
 
     <!-- TextView for Drone Battery -->
 
     <ImageView
         android:id="@+id/droneImgView"
-        android:layout_width="185dp"
-        android:layout_height="181dp"
-        android:src="@drawable/drone"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/droneblack"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.523"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <!-- App title displayed -->
+    <TextView
+        android:id="@+id/tv_app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp" />
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/AppLogoTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/app_name"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <!-- Welcome message -->
+
+    <TextView
+        android:id="@+id/tv_welcome_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="216dp"
+        android:text="Welcome to Ruitikangas Shooting Center"
+        android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
     <Button
         android:id="@+id/connectDroneBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="116dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="80dp"
         android:background="@drawable/flyviewbtn"
         android:text="@string/fly_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/droneBatteryTxt"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
         tools:ignore="DuplicateIds" />
+
+
+    <!-- TextView for Remote Battery -->
 
     <Button
         android:id="@+id/galleryBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:layout_marginEnd="144dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="84dp"
         android:background="@drawable/flyviewbtn"
         android:text="Gallery"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/remoteBatteryTxt" />
-
-
-
-
-
-
-    <!-- TextView for Remote Battery -->
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
     <TextView
         android:id="@+id/droneBatteryTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="164dp"
         android:text="Drone battery : --%"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/remoteBatteryTxt"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/droneImgView" />
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
     <TextView
         android:id="@+id/remoteBatteryTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="164dp"
         android:text="Remote battery : --%"
-        app:layout_constraintTop_toBottomOf="@id/droneImgView"
-        app:layout_constraintStart_toEndOf="@id/droneBatteryTxt"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5" />
+        app:layout_constraintStart_toEndOf="@id/droneBatteryTxt"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,11 +19,19 @@
             android:exported="true">
 
         </activity>
+        <!-- Old welcomepage declaration
+
+                    <activity
+            android:name=".WelcomeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="true"
+            android:screenOrientation="landscape">
+        -->
+        <!-- WelcomeActivity as the new entry point -->
         <activity android:name="com.parrot.camera.BatteryStatusActivity"
             android:configChanges="orientation"
             android:screenOrientation="landscape"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -35,6 +43,7 @@
             android:screenOrientation="landscape"
             android:exported="true">
         </activity>
+
     </application>
 
 </manifest>

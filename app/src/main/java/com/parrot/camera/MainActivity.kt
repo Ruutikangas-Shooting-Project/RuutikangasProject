@@ -68,6 +68,8 @@ import android.Manifest
 import android.content.Intent
 import android.view.View
 import com.parrot.drone.groundsdk.device.peripheral.media.MediaTaskStatus
+import java.security.Permissions
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -145,6 +147,7 @@ class MainActivity : AppCompatActivity() {
         groundSdk = ManagedGroundSdk.obtainSession(this)
         // All references taken are linked to the activity lifecycle and
         // automatically closed at its destruction.
+        //ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
     }
     override fun onStart() {
         super.onStart()
@@ -545,13 +548,23 @@ class MainActivity : AppCompatActivity() {
      * Download the selected media resource.
      */
     private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String) {
+        //add to check file name
+        val extension = when (resource.format) {
+            MediaItem.Resource.Format.JPG ->".jpg"
+            MediaItem.Resource.Format.MP4 ->".mp4"
+            else ->""
+        }
+
         val droneVideosDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "DroneVideos")
         if (!droneVideosDir.exists()) {
             droneVideosDir.mkdirs()
         }
-
-        val file = File(droneVideosDir, fileName)
-        val mediaDestination = MediaDestination.Companion.path(file)
+        //0812 new code
+        val file = File(droneVideosDir, "$fileName$extension")
+        val mediaDestination= MediaDestination.Companion.path(file)
+        //below are old code
+        //val file = File(droneVideosDir, fileName)
+        //val mediaDestination = MediaDestination.Companion.path(file)
 
         mediaStoreRef?.get()?.let { mediaStore ->
             mediaStore.download(
