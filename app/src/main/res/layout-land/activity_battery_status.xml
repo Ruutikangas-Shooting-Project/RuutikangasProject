@@ -65,11 +65,20 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
         android:layout_marginTop="80dp"
-        android:background="@drawable/flyviewbtn"
+        android:background="@drawable/btn_disconnted"
         android:text="@string/fly_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title"
         tools:ignore="DuplicateIds" />
+    <View
+        android:id="@+id/flyviewBtnOverlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="84dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
 
     <!-- TextView for Remote Battery -->

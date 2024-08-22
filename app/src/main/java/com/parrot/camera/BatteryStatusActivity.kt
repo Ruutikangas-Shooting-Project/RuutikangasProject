@@ -39,6 +39,12 @@ class BatteryStatusActivity :AppCompatActivity() {
 
         // link to main fly model (id change to flyviewBtn)
         val flyViewBtn = findViewById<Button>(R.id.connectDroneBtn)
+        val flyviewBtnOverlay = findViewById<View>(R.id.flyviewBtnOverlay)
+        flyviewBtnOverlay.setOnClickListener{
+            if(!flyViewBtn.isEnabled) {
+                Toast.makeText(this, "Connect to drone to get fly mode", Toast.LENGTH_SHORT).show()
+            }
+        }
         flyViewBtn.setOnClickListener {
             val intent = Intent (this, MainActivity::class.java)
             startActivity(intent)
@@ -47,18 +53,9 @@ class BatteryStatusActivity :AppCompatActivity() {
         val galleryBtnOverlay = findViewById<View>(R.id.galleryBtnOverlay)
         galleryBtnOverlay.setOnClickListener {
             if (!galleryBtn.isEnabled) {
-                Toast.makeText(this, "Pls connect to drone", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please connect to drone", Toast.LENGTH_SHORT).show()
             }
         }
-       /* galleryBtn.setOnClickListener {
-            if (!galleryBtn.isEnabled) {
-                Toast.makeText(this, "Pls connect to drone", Toast.LENGTH_SHORT).show()
-            }else{
-                val intent = Intent(this, MediaListActivity::class.java)
-                startActivity(intent)
-            }
-        }*/
-
         galleryBtn.setOnClickListener {
             val intent = Intent(this, MediaListActivity::class.java)
             startActivity(intent)
@@ -74,8 +71,6 @@ class BatteryStatusActivity :AppCompatActivity() {
                 }
 
                 //0821 new code check if connect to drone
-                //val droneConnected = it.drone?.state?.connectionState == DeviceState.ConnectionState.CONNECTED
-                //findViewById<Button>(R.id.galleryBtn).isEnabled = droneConnected
                 val droneConnected = it.drone?.state?.connectionState == DeviceState.ConnectionState.CONNECTED
                 updateBtnState(droneConnected)
 
@@ -105,17 +100,25 @@ class BatteryStatusActivity :AppCompatActivity() {
        //0821 new code check if connect to drone
         val galleryButton: Button = findViewById(R.id.galleryBtn)
         val galleryBtnOverlay : View = findViewById(R.id.galleryBtnOverlay)
+        val flyViewBtn: Button = findViewById(R.id.connectDroneBtn)
+        val flyviewBtnOverlay: View = findViewById(R.id.flyviewBtnOverlay)
 
         galleryButton.isEnabled = droneConnected
         galleryBtnOverlay.visibility = if (droneConnected) View.GONE else View.VISIBLE
+        //for fly view btn
+        flyViewBtn.isEnabled = droneConnected
+        flyviewBtnOverlay.visibility = if (droneConnected) View.GONE else View.VISIBLE
 
-        galleryButton.background = if (droneConnected){
-            ContextCompat.getDrawable(this, R.drawable.btn_connected)
+        val backgroundResource = if (droneConnected){
+            R.drawable.btn_connected
         }else {
-            ContextCompat.getDrawable(this, R.drawable.btn_disconnted)
+            R.drawable.btn_disconnted
         }
+        galleryButton.background = ContextCompat.getDrawable(this, backgroundResource)
+        flyViewBtn.background = ContextCompat.getDrawable(this, backgroundResource)
 
     }
+    //problem, this override is no function
     override fun onDestroy() {
         super.onDestroy()
     }

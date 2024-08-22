@@ -72,7 +72,6 @@ class MediaListActivity : AppCompatActivity() {
         }
     }
 
-
      
     //0813 can see file name but cant download, try new one
     private fun monitorMediaStore() {
@@ -91,7 +90,6 @@ class MediaListActivity : AppCompatActivity() {
         }
     }
     //0812 try new code to save files
-
     /*
     private fun monitorMediaStore()  {
         drone?.let {drone ->
