@@ -234,7 +234,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Monitor media store.
-        monitorMediaStore()
+        //monitorMediaStore()
     }
 
     /**
@@ -510,89 +510,6 @@ class MainActivity : AppCompatActivity() {
                 liveStreamRef = null
                 // Stop rendering the stream.
                 streamView.setStream(null)
-            }
-        }
-    }
-
-    /**
-     * Monitor the drone's media store.
-     */
-    private fun monitorMediaStore() {
-        mediaStoreRef = drone?.getPeripheral(MediaStore::class.java) { mediaStore ->
-            mediaStore?.browse { list ->
-                mediaList = list ?: emptyList()
-                displayMediaList(mediaList)
-            }
-        }
-    }
-
-    /**
-     * Display the media list in the ListView.
-     */
-    private fun displayMediaList(mediaList: List<MediaItem>) {
-        val mediaNames = mediaList.map { it.name }
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mediaNames)
-        mediaListView.adapter = adapter
-
-        mediaListView.setOnItemClickListener { _, _, position, _ ->
-            val selectedMedia = mediaList[position]
-            val mediaResource = selectedMedia.resources.firstOrNull()
-            mediaResource?.let {
-                downloadMediaResource(it, selectedMedia.name)
-            }
-        }
-    }
-
-
-    /**
-     * Download the selected media resource.
-     */
-    private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String) {
-        //add to check file name
-        val extension = when (resource.format) {
-            MediaItem.Resource.Format.JPG ->".jpg"
-            MediaItem.Resource.Format.MP4 ->".mp4"
-            else ->""
-        }
-
-        val droneVideosDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "DroneVideos")
-        if (!droneVideosDir.exists()) {
-            droneVideosDir.mkdirs()
-        }
-        //0812 new code
-        val file = File(droneVideosDir, "$fileName$extension")
-        val mediaDestination= MediaDestination.Companion.path(file)
-        //below are old code
-        //val file = File(droneVideosDir, fileName)
-        //val mediaDestination = MediaDestination.Companion.path(file)
-
-        mediaStoreRef?.get()?.let { mediaStore ->
-            mediaStore.download(
-                listOf(resource),
-                MediaStore.DownloadType.FULL,
-                mediaDestination
-            ) { downloader ->
-                downloader?.let { mediaDownloader ->
-                    // Check download status
-                    if (mediaDownloader.status == MediaTaskStatus.RUNNING) {
-                        // Periodically check the download progress
-                        Timer().schedule(object : TimerTask() {
-                            override fun run() {
-                                runOnUiThread {
-                                    val progress = mediaDownloader.totalProgress
-                                    val status = mediaDownloader.status
-                                    if (status == MediaTaskStatus.COMPLETE) {
-                                        val downloadedFile = mediaDownloader.downloadedFile
-                                        Toast.makeText(this@MainActivity, "$fileName downloaded to ${downloadedFile?.absolutePath}", Toast.LENGTH_SHORT).show()
-                                        this.cancel()
-                                    } else {
-                                        Toast.makeText(this@MainActivity, "Download progress: $progress%", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                        }, 0, 1000) // Check every second
-                    }
-                }
             }
         }
     }

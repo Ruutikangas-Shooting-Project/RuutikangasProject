@@ -36,7 +36,7 @@ class MediaManager(
         }
     }
 
-    private fun displayMediaList(mediaList: List<MediaItem>) {
+    /*private fun displayMediaList(mediaList: List<MediaItem>) {
         val mediaNames = mediaList.map { it.name }
         val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, mediaNames)
         mediaListView.adapter = adapter
@@ -48,9 +48,33 @@ class MediaManager(
                 downloadMediaResource(it, selectedMedia.name)
             }
         }
+    }*/
+
+    private fun displayMediaList(mediaList: List<MediaItem>) {
+        // For display purposes, append file extensions to media names
+        val mediaNames = mediaList.map { mediaItem ->
+            val extension = when (mediaItem.type) {
+                MediaItem.Type.VIDEO -> ".mp4"
+                MediaItem.Type.PHOTO -> ".jpg"
+                else -> ""
+            }
+            "${mediaItem.name}$extension"
+        }
+
+        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, mediaNames)
+        mediaListView.adapter = adapter
+
+        // Handle item click for downloading media
+        mediaListView.setOnItemClickListener { _, _, position, _ ->
+            val selectedMedia = mediaList[position]
+            val mediaResource = selectedMedia.resources.firstOrNull()
+            mediaResource?.let {
+                downloadMediaResource(it, selectedMedia.name)  // Use original name for download
+            }
+        }
     }
     //8-20 test new
-    private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String){
+    /*private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String){
         val directoryType = when (resource.format) {
             MediaItem.Resource.Format.MP4-> Environment.DIRECTORY_MOVIES
             MediaItem.Resource.Format.JPG -> Environment.DIRECTORY_PICTURES
@@ -89,6 +113,44 @@ class MediaManager(
                     }, 0, 1000)
 
                 }
+            }
+        }
+    }*/
+
+    private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String) {
+        // Determine the appropriate directory based on file type
+        val directory = when (resource.format) {
+            MediaItem.Resource.Format.JPG -> {
+                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "DronePhotos")
+            }
+            MediaItem.Resource.Format.MP4 -> {
+                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "DroneVideos")
+            }
+            else -> {
+                //Toast.makeText(this, "Unsupported file format", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+
+        // Add the correct extension for saving purposes
+        val extension = when (resource.format) {
+            MediaItem.Resource.Format.JPG -> ".jpg"
+            MediaItem.Resource.Format.MP4 -> ".mp4"
+            else -> ""
+        }
+
+        // Save the file with the correct extension
+        val file = File(directory, "$fileName$extension")
+        val mediaDestination = MediaDestination.path(file)
+
+        mediaStoreRef?.get()?.download(listOf(resource), MediaStore.DownloadType.FULL, mediaDestination) { downloader ->
+            downloader?.let { mediaDownloader ->
+                val fileProgress = mediaDownloader.currentFileProgress
+                Toast.makeText(context, "Download status: $fileProgress%", Toast.LENGTH_SHORT).show()
             }
         }
     }
