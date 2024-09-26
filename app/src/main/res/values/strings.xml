@@ -30,4 +30,9 @@
     <string name="device_state">%1$s - Battery: %2$d%%</string>
     <string name="device_disconnected">DISCONNECTED - Battery: %1$d%%</string>
 
+    <string-array name="session_types">
+        <item>Training</item>
+        <item>Competition</item>
+    </string-array>
+
 </resources>

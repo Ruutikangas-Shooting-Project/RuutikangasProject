@@ -30,13 +30,12 @@ class MediaListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_media_list)
+        setContentView(R.layout.activity_media_list) // Use the correct activity layout
 
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
 
         groundSdk = ManagedGroundSdk.obtainSession(this)
         mediaListView = findViewById(R.id.media_list_view)
-
 
         mediaManager = MediaManager(this, mediaListView)
         monitorAutoConnection()
