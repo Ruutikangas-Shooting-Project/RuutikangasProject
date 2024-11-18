@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
+import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +27,13 @@ class MediaListActivity : AppCompatActivity() {
     private var drone: Drone? = null
     private var mediaStoreRef: Ref<MediaStore>? = null
     private var selectedMediaItem: MediaItem? = null
-    
+    private lateinit var browseDroneVideosButton: Button
+    private lateinit var droneVideosListView: ListView
+
+
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,11 +43,21 @@ class MediaListActivity : AppCompatActivity() {
 
         groundSdk = ManagedGroundSdk.obtainSession(this)
         mediaListView = findViewById(R.id.media_list_view)
+        droneVideosListView = findViewById(R.id.droneVideosListView)
+        browseDroneVideosButton = findViewById(R.id.browseDroneVideosButton)
 
-        mediaManager = MediaManager(this, mediaListView)
+
+
+        mediaManager = MediaManager(this, mediaListView, droneVideosListView)  // filesDir
         monitorAutoConnection()
 
+        browseDroneVideosButton.setOnClickListener {
+            mediaManager.browseExternalStorageForVideos()
+        }
+
         registerForContextMenu(mediaListView)
+
+
     }
 
     private fun monitorAutoConnection() {

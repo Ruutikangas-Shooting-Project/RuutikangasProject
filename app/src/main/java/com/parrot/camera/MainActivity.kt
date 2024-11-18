@@ -69,6 +69,8 @@ import android.content.Intent
 import android.view.View
 import com.parrot.drone.groundsdk.device.peripheral.media.MediaTaskStatus
 import java.security.Permissions
+import com.google.firebase.FirebaseApp
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -124,6 +126,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        FirebaseApp.initializeApp(this)
         //mine is activity_main_land
         setContentView(R.layout.activity_main_land)
 

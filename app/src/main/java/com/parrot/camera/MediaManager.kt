@@ -1,7 +1,9 @@
 package com.parrot.camera
 
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ListView
@@ -16,10 +18,19 @@ import com.parrot.drone.groundsdk.device.peripheral.media.MediaItem
 import com.parrot.drone.groundsdk.device.peripheral.media.MediaTaskStatus
 import java.io.File
 import android.view.LayoutInflater
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 
 class MediaManager(
     private val context: Context,
-    private val mediaListView: ListView
+    //private val filesDir: File,
+    private val mediaListView: ListView,
+    private val droneVideosListView: ListView
 ) {
     var mediaList: List<MediaItem> = emptyList()
         private set
@@ -34,44 +45,6 @@ class MediaManager(
         }
     }
 
-    /*private fun displayMediaList(mediaList: List<MediaItem>) {
-        val mediaNames = mediaList.map { it.name }
-        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, mediaNames)
-        mediaListView.adapter = adapter
-
-        mediaListView.setOnItemClickListener { _, _, position, _ ->
-            val selectedMedia = mediaList[position]
-            val mediaResource = selectedMedia.resources.firstOrNull()
-            mediaResource?.let {
-                downloadMediaResource(it, selectedMedia.name)
-            }
-        }
-    }*/
-
-    /*private fun displayMediaList(mediaList: List<MediaItem>) {
-        // For display purposes, append file extensions to media names
-//        val mediaNames = mediaList.map { mediaItem ->
-//            val extension = when (mediaItem.type) {
-//                MediaItem.Type.VIDEO -> ".mp4"
-//                MediaItem.Type.PHOTO -> ".jpg"
-//                else -> ""
-//            }
-//            "${mediaItem.name}$extension"
-//        }
-
-        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1) //mediaNames
-        mediaListView.adapter = adapter
-
-        // Handle item click for downloading media
-        mediaListView.setOnItemClickListener { _, _, position, _ ->
-            val selectedMedia = mediaList[position]
-            val mediaResource = selectedMedia.resources.firstOrNull()
-            mediaResource?.let {
-                //downloadMediaResource(it, selectedMedia.name)  // Use original name for download
-                showNamingDialog(it)
-            }
-        }
-    }*/
 
     private fun displayMediaList(mediaList: List<MediaItem>) {
         val adapter = MediaListAdapter(context, mediaList, mediaStoreRef)
@@ -81,55 +54,11 @@ class MediaManager(
             val selectedMedia = mediaList[position]
             val mediaResource = selectedMedia.resources.firstOrNull()
             mediaResource?.let {
-                //downloadMediaResource(it, selectedMedia.name)
-                showNamingDialog(it)
+                downloadMediaResource(it, selectedMedia.name)
+                //showNamingDialog(it)
             }
         }
     }
-
-    //8-20 test new
-    /*private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String){
-        val directoryType = when (resource.format) {
-            MediaItem.Resource.Format.MP4-> Environment.DIRECTORY_MOVIES
-            MediaItem.Resource.Format.JPG -> Environment.DIRECTORY_PICTURES
-            else -> {
-                Toast.makeText(context, "File format is not supported", Toast.LENGTH_SHORT).show()
-                return
-            }
-        }
-        val  directory = File(context.getExternalFilesDir(directoryType), "DroneMedia")
-        if (!directory.exists()) {
-            directory.mkdirs()
-        }
-        val file = File(directory, fileName)
-        val mediaDestination = MediaDestination.path(file)
-
-        mediaStoreRef?.get()?.let { mediaStore ->
-            mediaStore.download(
-                listOf(resource),
-                MediaStore.DownloadType.FULL,
-                mediaDestination
-            ) { downloader ->
-                downloader?.let { mediaDownloader ->
-                    val timer = Timer()
-                    timer.schedule(timerTask {
-                        (context as Activity).runOnUiThread {
-                            val progress = mediaDownloader.totalProgress
-                            val status = mediaDownloader.status
-                            if (status == MediaTaskStatus.COMPLETE) {
-                                val downloadedFile = mediaDownloader.downloadedFile
-                                Toast.makeText(context, "$fileName downloaded to ${downloadedFile?.absolutePath}", Toast.LENGTH_SHORT).show()
-                                timer.cancel()
-                            } else {
-                                Toast.makeText(context, "Download status: $progress%", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }, 0, 1000)
-
-                }
-            }
-        }
-    }*/
 
     //2592024
     /*private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String) {
@@ -170,7 +99,7 @@ class MediaManager(
         }
     }*/
 
-    private fun downloadMediaResource(resource: MediaItem.Resource, shooterId: String, sessionType: String) {
+    /*private fun downloadMediaResource(resource: MediaItem.Resource, shooterId: String, sessionType: String) {
         // Get the current date and time for unique file naming
         val currentDateTime = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())
 
@@ -209,9 +138,101 @@ class MediaManager(
                 //Toast.makeText(this, "Download status: $fileProgress%", Toast.LENGTH_SHORT).show()
             }
         }
+    }*/
+
+    private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String) {
+        // Determine the appropriate directory based on file type
+        val directory = when (resource.format) {
+            MediaItem.Resource.Format.JPG -> {
+                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "DronePhotos")
+            }
+            MediaItem.Resource.Format.MP4 -> {
+                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "DroneVideos")
+            }
+            else -> {
+                //Toast.makeText(this, "Unsupported file format", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+
+        // Add the correct extension for saving purposes
+        val extension = when (resource.format) {
+            MediaItem.Resource.Format.JPG -> ".jpg"
+            MediaItem.Resource.Format.MP4 -> ".mp4"
+            else -> ""
+        }
+
+        // Save the file with the correct extension
+        val file = File(directory, "$fileName$extension")
+        val mediaDestination = MediaDestination.path(directory)
+
+        mediaStoreRef?.get()?.download(listOf(resource), MediaStore.DownloadType.FULL, mediaDestination) { downloader ->
+            downloader?.let { mediaDownloader ->
+                val fileProgress = mediaDownloader.currentFileProgress
+                Toast.makeText(context, "Download status: $fileProgress%", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    private fun showNamingDialog(resource: MediaItem.Resource) {
+
+    private fun uploadToFirebaseStorage(file: File, customFileName: String) {
+        if (!file.exists() || !file.isFile) {
+            Log.e("FirebaseUploadError", "Invalid file selected for upload: ${file.absolutePath}")
+            Toast.makeText(context, "Invalid file selected for upload", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val firebaseFileName = "${customFileName}_$timeStamp.${file.extension}"
+
+        val storage = FirebaseStorage.getInstance()
+        val storageRef: StorageReference = storage.reference
+        val fileRef = storageRef.child("drone_media/$firebaseFileName")
+
+        val fileUri = Uri.fromFile(file)
+        fileRef.putFile(fileUri)
+            .addOnSuccessListener {
+                Toast.makeText(context, "File uploaded successfully to Firebase as $firebaseFileName!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { exception ->
+                val errorMessage = exception.localizedMessage ?: "Unknown error"
+                Log.e("FirebaseUploadError", "Failed to upload file: $errorMessage")
+                Toast.makeText(context, "Failed to upload file: $errorMessage", Toast.LENGTH_LONG).show()
+            }
+    }
+
+    fun browseExternalStorageForVideos() {
+        val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "DroneVideos")
+        if (!directory.exists() || !directory.isDirectory) {
+            Toast.makeText(context, "No videos found", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val videoFiles = directory.listFiles { file ->
+            file.isFile && file.extension.equals("mp4", ignoreCase = true)
+        } ?: emptyArray()
+
+        if (videoFiles.isEmpty()) {
+            Toast.makeText(context, "No videos found", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val videoNames = videoFiles.map { it.name }
+        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, videoNames)
+        droneVideosListView.adapter = adapter
+
+        droneVideosListView.setOnItemClickListener { _, _, position, _ ->
+            val selectedVideo = videoFiles[position]
+            showNamingDialog(selectedVideo)
+        }
+    }
+
+
+    /*private fun showNamingDialog(resource: MediaItem.Resource) {
         // Use the activity context for creating the AlertDialog
         val dialogBuilder = AlertDialog.Builder(context)
 
@@ -253,65 +274,89 @@ class MediaManager(
         // Show the dialog
         val dialog = dialogBuilder.create()
         dialog.show()
-    }
+    }*/
 
-//old code
-    /*
-    private fun downloadMediaResource(resource: MediaItem.Resource, fileName: String) {
-        val directory = when (resource.format) {
-            MediaItem.Resource.Format.MP4 -> {
-                File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES),
-                    "DroneVideos"
+    private fun showNamingDialog(file: File) {
+        fetchUsersFromFirestore { userList ->
+            if (userList.isNotEmpty()) {
+                val userNames = userList.map { "${it.first} ${it.second}" }
+                val dialogBuilder = AlertDialog.Builder(context)
+                val inflater = LayoutInflater.from(context)
+                val dialogView = inflater.inflate(R.layout.dialog_naming, null)
+                dialogBuilder.setView(dialogView)
+
+                val userNameSpinner = dialogView.findViewById<Spinner>(R.id.userNameSpinner)
+                val sessionTypeSpinner = dialogView.findViewById<Spinner>(R.id.sessionTypeSpinner)
+
+                val userAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, userNames)
+                userAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                userNameSpinner.adapter = userAdapter
+
+                val sessionAdapter = ArrayAdapter(
+                    context,
+                    android.R.layout.simple_spinner_item,
+                    context.resources.getStringArray(R.array.session_types) // Load from strings.xml
+
                 )
-            }
-            MediaItem.Resource.Format.JPG -> {
-                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "DronePhotos")
-            }
-            else -> {
-                Toast.makeText(context, "Unsupported file format", Toast.LENGTH_SHORT).show()
-                return
-            }
-        }
+                sessionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                sessionTypeSpinner.adapter = sessionAdapter
 
-        if (!directory.exists()) {
-            directory.mkdirs()
-        }
-
-        val file = File(directory, fileName)
-        val mediaDestination = MediaDestination.Companion.path(file)
-
-        mediaStoreRef?.get()?.let { mediaStore ->
-            mediaStore.download(
-                listOf(resource),
-                MediaStore.DownloadType.FULL,
-                mediaDestination
-            ) { downloader ->
-                downloader?.let { mediaDownloader ->
-                    // Check download status
-                    if (mediaDownloader.status == MediaTaskStatus.RUNNING) {
-                        // Periodically check the download progress
-                        Timer().schedule(object : TimerTask() {
-                            override fun run() {
-                                (context as? MediaListActivity)?.runOnUiThread {
-                                    val progress = mediaDownloader.totalProgress
-                                    val status = mediaDownloader.status
-                                    if (status == MediaTaskStatus.COMPLETE) {
-                                        val downloadedFile = mediaDownloader.downloadedFile
-                                        Toast.makeText(context, "$fileName downloaded to ${downloadedFile?.absolutePath}", Toast.LENGTH_SHORT).show()
-                                        this.cancel()
-                                    } else {
-                                        Toast.makeText(context, "Download progress: $progress%", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                        }, 0, 1000) // Check every second
-                    }
+                dialogBuilder.setPositiveButton("Save") { _, _ ->
+                    val selectedUserPosition = userNameSpinner.selectedItemPosition
+                    val selectedUser = userList[selectedUserPosition]
+                    val customFileName = "${selectedUser.first}_${selectedUser.second}"
+                    val sessionType = sessionTypeSpinner.selectedItem.toString()
+                    uploadToFirebaseStorage(file, "$customFileName ($sessionType)")
                 }
+
+                dialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }
+
+                dialogBuilder.create().show()
+            } else {
+                Toast.makeText(context, "No users found", Toast.LENGTH_SHORT).show()
             }
         }
     }
-*/
+
+    /*private fun fetchUsersFromFirestore(callback: (List<Pair<String, String>>) -> Unit) {
+        val firestore = FirebaseFirestore.getInstance()
+        firestore.collection("users").get()
+            .addOnSuccessListener { result ->
+                val userList = result.documents.mapNotNull {
+                    val firstName = it.getString("fm")
+                    val lastName = it.getString("lm")
+                    if (firstName != null && lastName != null) Pair(firstName, lastName) else null
+                }
+                callback(userList)
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Failed to fetch users", Toast.LENGTH_SHORT).show()
+                callback(emptyList())
+            }
+    }*/
+
+    private fun fetchUsersFromFirestore(callback: (List<Pair<String, String>>) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val usersRef = db.collection("users")
+
+        usersRef.get().addOnSuccessListener { documents ->
+            val userList = mutableListOf<Pair<String, String>>()
+            for (document in documents) {
+                val firstName = document.getString("fm") ?: ""
+                val lastName = document.getString("lm") ?: ""
+                userList.add(Pair(firstName, lastName))
+            }
+            callback(userList) // Pass the list of user names to the callback
+        }.addOnFailureListener { exception ->
+            Log.e("FirestoreError", "Error fetching users: ", exception)
+            Toast.makeText(context, "Failed to fetch users", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
     fun deleteMedia(resources: Collection<MediaItem.Resource>) {
         mediaStoreRef?.get()?.delete(resources) { deleter ->
             deleter?.let { mediaDeleter ->

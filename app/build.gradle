@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -32,7 +33,14 @@ dependencies {
 
     // GroundSdk dependencies
     implementation 'com.parrot.drone.groundsdk:groundsdk:7.7.+'
+    implementation 'com.google.firebase:firebase-storage:21.0.1'
+    implementation 'com.google.firebase:firebase-firestore-ktx:25.1.1'
     runtimeOnly 'com.parrot.drone.groundsdk:arsdkengine:7.7.+'
+
+    // Firebase dependencies
+    implementation platform('com.google.firebase:firebase-bom:32.1.1') // Firebase BOM for compatibility
+    //implementation 'com.google.firebase:firebase-storage'
+    //implementation 'com.google.firebase:firebase-firestore'          // Firebase Firestore (if needed)
     //new layout
     //implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 }

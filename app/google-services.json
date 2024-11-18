@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1039433779034",
+    "project_id": "ruutinkangas",
+    "storage_bucket": "ruutinkangas.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039433779034:android:c1041537079bc215381563",
+        "android_client_info": {
+          "package_name": "com.parrot.camera"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5eZUSb-oXCoGEO7xu9BlRJ6s386Dwb5M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -5,16 +5,19 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/shooterIdInput"
+    <!-- Spinner for selecting user (populated from Firestore) -->
+    <Spinner
+        android:id="@+id/userNameSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Shooter ID" />
+        android:layout_marginBottom="16dp"
+        android:prompt="@string/select_user_prompt" />
 
+    <!-- Existing Spinner for session type selection -->
     <Spinner
         android:id="@+id/sessionTypeSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
-
+        android:layout_marginTop="16dp"
+        android:prompt="@string/select_user_prompt" />
 </LinearLayout>
