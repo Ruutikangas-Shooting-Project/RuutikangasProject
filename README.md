@@ -36,7 +36,7 @@
   - Organizes file naming (e.g., `ShooterName_(ActivityType)_YYYYMMDD_HHMMSS.MP4`).
 
 ![Uploading to Firebase](Screenshot_20241217_165527_BulletDrone.jpg)
-![File naming logic](Sieppaa.png)
+![File naming logic](Sieppaa.PNG)
 
 ---
 
