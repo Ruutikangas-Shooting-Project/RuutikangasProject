@@ -48,15 +48,15 @@ class MediaListAdapter(
         viewHolder.mediaNameTextView.text = mediaItem.name
 
         // Clear the ImageView to avoid displaying incorrect images due to view recycling.
-        viewHolder.thumbnailImageView.setImageResource(R.drawable.default_thumbnail)
+        //viewHolder.thumbnailImageView.setImageResource(R.drawable.default_thumbnail)
 
         // Fetch the thumbnail using the MediaStore reference.
-        mediaStoreRef?.get()?.fetchThumbnailOf(mediaItem, Ref.Observer { bitmap ->
+        /*mediaStoreRef?.get()?.fetchThumbnailOf(mediaItem, Ref.Observer { bitmap ->
             // Ensure the current position matches before setting the bitmap to avoid incorrect images.
             if (bitmap != null && viewHolder.position == position) {
                 viewHolder.thumbnailImageView.setImageBitmap(bitmap)
             }
-        })
+        })*/
 
         // Store the current position in the ViewHolder for reference during thumbnail loading.
         viewHolder.position = position
@@ -67,7 +67,7 @@ class MediaListAdapter(
     // ViewHolder class to hold references to the views for each item in the list.
     private class ViewHolder(view: View) {
         val mediaNameTextView: TextView = view.findViewById(R.id.mediaNameTextView) // TextView for the media name.
-        val thumbnailImageView: ImageView = view.findViewById(R.id.thumbnailImageView) // ImageView for the thumbnail.
+        //val thumbnailImageView: ImageView = view.findViewById(R.id.thumbnailImageView) // ImageView for the thumbnail.
         var position: Int = -1 // Variable to hold the current position for matching with the correct item.
     }
 }
