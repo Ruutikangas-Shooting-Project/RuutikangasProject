@@ -27,12 +27,14 @@
 - Browse through recorded videos and photos stored on the drone's SD card.
 - Download videos/photos to your phone.
 - Delete unnecessary files.
+
+![Gallery](Screenshot_20241217_165516_BulletDrone.jpg)
+  
 - **Fetch user names from Firestore**: Select the shooter's name from a dropdown/list populated by Firestore.
 - **Upload videos to Firebase Storage**:
   - Automatically creates a directory for each shooter in Firebase.
   - Organizes file naming (e.g., `ShooterName_(ActivityType)_YYYYMMDD_HHMMSS.MP4`).
 
-![Gallery](Screenshot_20241217_165516_BulletDrone.jpg)
 ![Uploading to Firebase](Screenshot_20241217_165527_BulletDrone.jpg)
 ![File naming logic](Sieppaa.png)
 
