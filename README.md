@@ -1,6 +1,6 @@
 # BulletDrone
 
-**BulletDrone** is a Kotlin-based mobile application designed for shooting ranges to record shooters’ training or competition sessions. It integrates with **Parrot SDK** for drone control and **Firebase** (Firestore and Storage) for user data management and cloud storage.
+**BulletDrone** is a Kotlin-based mobile application designed for a shooting range to record shooters’ training or competition sessions. It integrates with **Parrot SDK** for drone control and **Firebase** (Firestore and Storage) for user data management and cloud storage.
 
 ---
 
