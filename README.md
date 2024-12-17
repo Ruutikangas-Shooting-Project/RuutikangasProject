@@ -19,7 +19,7 @@
 - Monitor the battery status of both the drone and remote.
 - Control all drone flight functionalities.
 
-![Fly View](screenshots/Screenshot_20241217_165507_BulletDrone.jpg)
+![Fly View](Screenshot_20241217_165507_BulletDrone.jpg)
 
 ---
 
@@ -32,7 +32,9 @@
   - Automatically creates a directory for each shooter in Firebase.
   - Organizes file naming (e.g., `ShooterName_(ActivityType)_YYYYMMDD_HHMMSS.MP4`).
 
-![Gallery](screenshots/Screenshot_20241217_165527_BulletDrone.jpg)
+![Gallery](Screenshot_20241217_165516_BulletDrone.jpg)
+![Uploading to Firebase](Screenshot_20241217_165527_BulletDrone.jpg)
+![File naming logic](Sieppaa.png)
 
 ---
 
