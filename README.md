@@ -1,6 +1,6 @@
 # BulletDrone
 
-**BulletDrone** is a Kotlin-based mobile application developed to control drones, manage video/photo recordings, and integrate with Firebase Storage for easy access and organization. The project uses **Parrot SDK** for drone control and **Firebase** for cloud storage.
+**BulletDrone** is a Kotlin-based mobile application designed for shooting ranges to record shooters’ training or competition sessions. It integrates with **Parrot SDK** for drone control and **Firebase** (Firestore and Storage) for user data management and cloud storage.
 
 ---
 
@@ -10,8 +10,7 @@
 - **Fly View**: Control the drone and start recording videos.
 - **Gallery**: Manage videos/photos, including downloading, deleting, and uploading to Firebase Storage.
 
-![Main Page](![Screenshot_20241217_165436_BulletDrone](https://github.com/user-attachments/assets/10a4203b-3361-49d9-bf92-d48a6c765098)
-)
+![Main Page](screenshots/Screenshot_20241217_165436_BulletDrone.jpg)
 
 ---
 
@@ -20,8 +19,7 @@
 - Monitor the battery status of both the drone and remote.
 - Control all drone flight functionalities.
 
-![Fly View](![Screenshot_20241217_165507_BulletDrone](https://github.com/user-attachments/assets/d7643b27-4abb-431b-9b77-0593ca4c9878)
-)
+![Fly View](screenshots/Screenshot_20241217_165507_BulletDrone.jpg)
 
 ---
 
@@ -32,16 +30,9 @@
 - **Fetch user names from Firestore**: Select the shooter's name from a dropdown/list populated by Firestore.
 - **Upload videos to Firebase Storage**:
   - Automatically creates a directory for each shooter in Firebase.
-  - Organizes file naming, e.g.: `ShooterName_(ActivityType)_YYYYMMDD_HHMMSS.MP4`.
+  - Organizes file naming (e.g., `ShooterName_(ActivityType)_YYYYMMDD_HHMMSS.MP4`).
 
-![Gallery](![Screenshot_20241217_165507_BulletDrone](https://github.com/user-attachments/assets/d0cf73fc-dc23-47d3-9f16-1846d3345c30)
-)
-
-![Uploading to Firebase Storage](![Screenshot_20241217_165527_BulletDrone](https://github.com/user-attachments/assets/13f0f606-9a15-4e44-acd0-e170e228d212)
-)
-
-![Uploading to Firebase Storage](![Sieppaa](https://github.com/user-attachments/assets/323b0ac8-5686-4c39-ae0e-9b379100949d)
-)
+![Gallery](screenshots/Screenshot_20241217_165527_BulletDrone.jpg)
 
 ---
 
