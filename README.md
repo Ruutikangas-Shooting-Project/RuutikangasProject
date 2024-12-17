@@ -10,7 +10,7 @@
 - **Fly View**: Control the drone and start recording videos.
 - **Gallery**: Manage videos/photos, including downloading, deleting, and uploading to Firebase Storage.
 
-![Main Page](screenshots/Screenshot_20241217_165436_BulletDrone.jpg)
+![Main Page](Screenshot_20241217_165436_BulletDrone.jpg)
 
 ---
 
