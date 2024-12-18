@@ -45,4 +45,4 @@
 - **Parrot SDK**: Drone control and video management  
 - **Firebase Storage**: Cloud storage for video files  
 - **Firestore**: User data management (fetching shooter names)  
-- **Android SDK**: Mobile app development
+- **Android Studio**: Integrated Development Environment (IDE) for Android  
